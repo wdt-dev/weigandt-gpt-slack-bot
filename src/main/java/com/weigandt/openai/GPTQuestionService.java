@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,7 @@ import static com.weigandt.Constants.SEARCH.PARAMS.CONTEXT;
 import static com.weigandt.Constants.SEARCH.PARAMS.QUESTION;
 import static com.weigandt.Constants.SEARCH.QA_PROMPT;
 import static com.weigandt.Constants.SEARCH.REPHRASE_PROMPT;
+import static com.weigandt.Constants.SLACK_BOT.BOT_ID;
 
 @Service
 @Getter
@@ -52,12 +54,17 @@ public class GPTQuestionService {
 
     private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory) {
         String transformedChatHistory = chatHistory.stream()
-                .map(message -> message.getUsername() + ": " + message.getText())
+                .sorted(Comparator.comparing(Message::getTs))
+                .map(this::transformMessage)
                 .collect(Collectors.joining(System.lineSeparator()));
 
         String msg = REPHRASE_PROMPT.replace(QUESTION, question)
                 .replace(CHAT_HISTORY, transformedChatHistory);
         return Collections.singletonList(createUserChatMessage(msg));
+    }
+
+    private String transformMessage(Message message) {
+        return (BOT_ID.equals(message.getUser()) ? "Answer" : "Question") + ": " + message.getText();
     }
 
     private String getFirstMessage(ChatCompletionResult completion) {
