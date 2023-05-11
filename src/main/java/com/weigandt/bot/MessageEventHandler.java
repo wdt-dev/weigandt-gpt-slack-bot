@@ -26,16 +26,18 @@ public class MessageEventHandler implements BoltEventHandler<MessageEvent> {
     public Response apply(EventsApiPayload<MessageEvent> payload, EventContext ctx)
             throws IOException, SlackApiException {
         MessageEvent event = payload.getEvent();
-        String input = event.getText();
-        String user = event.getUser();
 
-        if (slackSupportService.isValidToAnswerMsg(input, user)) {
+//        if (slackSupportService.isNotValidToAnswerMsg(event)) {
+        if (!slackSupportService.isValidToAnswerMsg(event)) {
             ctx.logger.info("Bot not replying to self messages");
             return ctx.ack();
         }
 
+        String user = event.getUser();
+        String question = slackSupportService.cleanupMessage(event.getText());
+
         List<Message> messages = slackSupportService.getMsgHistory(event, ctx);
-        String answer = answerService.getAnswer(input, messages);
+        String answer = answerService.getAnswer(question, messages);
         String respText = String.format("<@%s> %s", user, answer);
 
         ChatPostMessageResponse messageResponse = ctx.client().chatPostMessage(r -> r
