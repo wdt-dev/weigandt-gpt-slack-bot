@@ -2,3 +2,26 @@ logging.level:
   com.slack.api: DEBUG
 server:
   port: 3000
+
+openai:
+  apikey:
+  embeddings:
+    model: text-embedding-ada-002
+  qa:
+    model: gpt-3.5-turbo
+
+pinecone:
+  apikey:
+  index:
+    name: test-embeddings
+  environment: us-west4-gcp
+  project:
+    name: 0eba6a6
+  namespace: docs-ns
+  topK: 2
+
+file:
+  processor:
+    chunk:
+      size: 30
+    overlap: 10
