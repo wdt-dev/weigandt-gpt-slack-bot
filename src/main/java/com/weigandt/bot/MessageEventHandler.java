@@ -27,7 +27,6 @@ public class MessageEventHandler implements BoltEventHandler<MessageEvent> {
             throws IOException, SlackApiException {
         MessageEvent event = payload.getEvent();
 
-//        if (slackSupportService.isNotValidToAnswerMsg(event)) {
         if (!slackSupportService.isValidToAnswerMsg(event)) {
             ctx.logger.info("Bot not replying to self messages");
             return ctx.ack();
