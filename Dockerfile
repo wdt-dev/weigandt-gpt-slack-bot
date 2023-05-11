@@ -1,6 +1,6 @@
-FROM openjdk:17-jdk-alpine
+FROM amazoncorretto:17.0.7
 WORKDIR /usr/src/gptslackbot
 #VOLUME /tmp
-ARG JAR_FILE
-COPY ${JAR_FILE} ./gptslackbot.jar
+COPY target/*.jar gptslackbot.jar
 ENTRYPOINT ["java","-jar","./gptslackbot.jar"]
+EXPOSE 3000
