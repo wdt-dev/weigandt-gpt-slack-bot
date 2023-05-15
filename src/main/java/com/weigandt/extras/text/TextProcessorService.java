@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +11,6 @@ import java.util.List;
 @Service
 @Getter
 @RequiredArgsConstructor
-@PropertySource("classpath:file.processor.properties")
 public class TextProcessorService {
 
     @Value("${file.processor.chunk.size}")

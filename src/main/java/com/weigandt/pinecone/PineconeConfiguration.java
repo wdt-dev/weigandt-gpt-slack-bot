@@ -8,16 +8,13 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:pinecone.properties")
 @Getter
 public class PineconeConfiguration {
 
     @Value("${pinecone.apikey}")
     private String apiKey;
-
     @Value("${pinecone.environment}")
     private String env;
     @Value("${pinecone.project.name}")
