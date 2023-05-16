@@ -25,3 +25,7 @@ file:
     chunk:
       size: 30
     overlap: 10
+chat:
+  history:
+    base:
+      path: ./logs

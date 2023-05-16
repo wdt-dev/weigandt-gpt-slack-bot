@@ -9,6 +9,7 @@ import com.weigandt.pdfconverter.dto.VectorData;
 import com.weigandt.pinecone.VectorCreateService;
 import com.weigandt.pinecone.VectorService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,9 +45,8 @@ public class ExtrasImportController {
         List<ChunkWithEmbedding> chunksWithEmbeddings = embeddingsService.createEmbeddingsForText(chunks);
         List<VectorData> vectorData = vectorService.toVectorsData(chunksWithEmbeddings);
         vectorData.forEach(data -> vectorCreateService.upsertVectors(data.getVectors()));
+        log.debug(StringUtils.join(chunks));
         return ResponseEntity.ok("Text imported successfully");
-        //log.info(StringUtils.join(chunks));
-
     }
 
     @PostMapping("/file")

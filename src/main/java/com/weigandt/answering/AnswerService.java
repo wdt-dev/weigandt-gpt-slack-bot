@@ -18,9 +18,9 @@ public class AnswerService {
     private final EmbeddingsService embeddingsService;
     private final VectorSearchService vectorSearchService;
 
-    public String getAnswer(String question, List<Message> chatHistory) {
+    public String getAnswer(String question, List<Message> chatHistory, String botUserId) {
         // 1 - reformat question (with chat history)
-        String rephrasedQuestion = gptQuestionService.rephraseQuestion(question, chatHistory);
+        String rephrasedQuestion = gptQuestionService.rephraseQuestion(question, chatHistory, botUserId);
 
         //  2 - create embedding from question
         List<Float> questionEmbedding = embeddingsService.createEmbeddingsForPinecone(rephrasedQuestion);
@@ -31,5 +31,9 @@ public class AnswerService {
 
         //  4 - ask GPT-4 for answer with data from vectors
         return gptQuestionService.askWithExtras(rephrasedQuestion, textBlocksFromVectorStorage);
+    }
+
+    public String getDefaultGptAnswer(String question) {
+        return gptQuestionService.ask(question);
     }
 }

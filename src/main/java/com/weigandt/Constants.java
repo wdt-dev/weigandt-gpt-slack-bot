@@ -9,9 +9,9 @@ public class Constants {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class SLACK_BOT {
         public static final String CMD_HELLO = "/hello";
+        public static final String CMD_EXTRAS = "/extras";
         public static final String CMD_IMPORT = "/import";
-        public static final String BOT_ID = "U0560P08DME";
-
+        public static final String LOG_EXT = ".log";
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
