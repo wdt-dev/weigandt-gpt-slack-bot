@@ -11,6 +11,7 @@ import com.slack.api.model.Message;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.SlackSupportService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,16 +26,12 @@ public class ExtrasCommandHandler implements SlashCommandHandler {
     @Override
     public Response apply(SlashCommandRequest payload, SlashCommandContext ctx) throws SlackApiException, IOException {
         SlashCommandPayload cmdPayload = payload.getPayload();
-
-//        if (!slackSupportService.isValidToAnswerMsg(cmdPayload, ctx.getBotUserId())) {
-//            ctx.logger.info("Bot not replying to self messages");
-//            return ctx.ack();
-//        }
+        Logger logger = ctx.logger;
 
         String user = cmdPayload.getUserName();
         String question = slackSupportService.cleanupMessage(cmdPayload.getText());
 
-        List<Message> messages = slackSupportService.getMsgHistory(cmdPayload, ctx);
+        List<Message> messages = slackSupportService.getMsgHistory(cmdPayload.getChannelId(), ctx);
         String answer = answerService.getAnswer(question, messages, ctx.getBotUserId());
         String respText = String.format("<@%s> %s", user, answer);
 
@@ -44,7 +41,7 @@ public class ExtrasCommandHandler implements SlashCommandHandler {
                 .token(ctx.getBotToken())
                 .blocks(slackSupportService.wrapInBlock(respText)));
         if (!messageResponse.isOk()) {
-            ctx.logger.error("chat.postMessage failed: {}", messageResponse.getError());
+            logger.error("chat.postMessage failed: {}", messageResponse.getError());
         }
         return ctx.ack();
     }
