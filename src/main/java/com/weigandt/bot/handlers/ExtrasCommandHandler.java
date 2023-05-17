@@ -1,4 +1,4 @@
-package com.weigandt.bot;
+package com.weigandt.bot.handlers;
 
 import com.slack.api.app_backend.slash_commands.payload.SlashCommandPayload;
 import com.slack.api.bolt.context.builtin.SlashCommandContext;
@@ -9,6 +9,7 @@ import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
 import com.slack.api.model.Message;
 import com.weigandt.answering.AnswerService;
+import com.weigandt.bot.SlackSupportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

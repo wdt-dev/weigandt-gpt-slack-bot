@@ -1,4 +1,4 @@
-package com.weigandt.bot;
+package com.weigandt.bot.handlers;
 
 import com.slack.api.bolt.context.builtin.SlashCommandContext;
 import com.slack.api.bolt.handler.builtin.SlashCommandHandler;
