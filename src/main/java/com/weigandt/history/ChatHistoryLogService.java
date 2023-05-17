@@ -22,9 +22,10 @@ public class ChatHistoryLogService {
     private String basePath;
 
     public void logQAForUser(String user, String question, String answer) {
-        if (!Files.exists(Paths.get(basePath))) {
-            log.error("Unknown path for logs provided, pls check: {}", basePath);
-            return;
+        Path base = Paths.get(basePath);
+        if (!Files.exists(base)) {
+            log.error("Unknown path for logs provided, try to create.. ");
+            createDirectory(base);
         }
         Path logFilePath = Paths.get(basePath, user + LOG_EXT);
         if (!Files.exists(logFilePath)) {
@@ -33,6 +34,14 @@ public class ChatHistoryLogService {
 
         writeToLogFile("Question: " + question, logFilePath);
         writeToLogFile("Answer: " + answer, logFilePath);
+    }
+
+    private void createDirectory(Path base) {
+        try {
+            Files.createDirectory(base);
+        } catch (IOException e) {
+            log.error("Can't create base path {}: {}", basePath, e.getMessage(), e);
+        }
     }
 
     private static void writeToLogFile(String text, Path logFilePath) {

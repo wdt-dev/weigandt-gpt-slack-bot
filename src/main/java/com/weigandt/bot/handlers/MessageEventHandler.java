@@ -12,6 +12,7 @@ import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.history.ChatHistoryLogService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,10 @@ public class MessageEventHandler implements BoltEventHandler<MessageEvent> {
             throws IOException, SlackApiException {
         MessageEvent event = payload.getEvent();
         Logger logger = ctx.logger;
+        if (StringUtils.containsNone(event.getText(), String.format("<@%s>", ctx.getBotUserId()))) {
+            logger.info("Bot not tagged, ignore");
+            return ctx.ack();
+        }
 
         String user = event.getUser();
         String question = slackSupportService.cleanupMessage(event.getText());
