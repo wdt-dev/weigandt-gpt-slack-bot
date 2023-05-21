@@ -2,6 +2,12 @@ logging.level:
   com.slack.api: DEBUG
 server:
   port: 3000
+  ssl:
+    key-store: classpath:gptslackbot.p12
+    key-store-password:
+    key-store-type: pkcs12
+    key-alias: gptslackbot
+    key-password:
 
 openai:
   apikey:
@@ -11,7 +17,7 @@ openai:
     model: gpt-3.5-turbo
 
 pinecone:
-  apikey:
+  apikey: 
   index:
     name: test-embeddings
   environment: us-west4-gcp
@@ -29,3 +35,5 @@ chat:
   history:
     base:
       path: ./logs
+    max:
+      size: 5Mb
