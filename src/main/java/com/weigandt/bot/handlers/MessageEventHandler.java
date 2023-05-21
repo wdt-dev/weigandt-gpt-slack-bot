@@ -7,10 +7,12 @@ import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
+import com.slack.api.model.Conversation;
 import com.slack.api.model.event.MessageEvent;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.history.ChatHistoryLogService;
+import com.weigandt.history.LogMsgJsonBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,13 +28,14 @@ public class MessageEventHandler implements BoltEventHandler<MessageEvent> {
     private final AnswerService answerService;
     private final ChatHistoryLogService chatHistoryLogService;
 
+
     @Override
     public Response apply(EventsApiPayload<MessageEvent> payload, EventContext ctx)
             throws IOException, SlackApiException {
         MessageEvent event = payload.getEvent();
         Logger logger = ctx.logger;
-        if (StringUtils.containsNone(event.getText(), String.format("<@%s>", ctx.getBotUserId()))) {
-            logger.info("Bot not tagged, ignore");
+        if (!slackSupportService.isCorrectToAnswerMsg(event, ctx)) {
+            logger.info("Bot not tagged or isn't an IM channel , ignore");
             return ctx.ack();
         }
 
@@ -43,18 +46,31 @@ public class MessageEventHandler implements BoltEventHandler<MessageEvent> {
         String respText = String.format("<@%s> %s", user, answer);
 
         MethodsClient client = ctx.client();
+        String botToken = ctx.getBotToken();
+        Conversation channelInfo = slackSupportService.getCachedChannelInfo(ctx.getChannelId(), client, botToken);
+        if (channelInfo.isIm()) {
+            logger.info("This is IM dialog");
+        }
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(event.getChannel())
-
                 .threadTs(event.getThreadTs())
-                .replyBroadcast(true)
-                .token(ctx.getBotToken())
+                .token(botToken)
                 .blocks(slackSupportService.wrapInBlock(respText)));
         if (!messageResponse.isOk()) {
             logger.error("chat.postMessage failed: {}", messageResponse.getError());
         }
-        String userFullName = slackSupportService.getUserFullName(user, client, ctx.getBotToken());
-        chatHistoryLogService.logQAForUser(userFullName, question, answer);
+        String userFullName = slackSupportService.getCachedUserFullName(user, client, botToken);
+        LogMsgJsonBuilder logEntry = LogMsgJsonBuilder.builder()
+                .datetime(String.valueOf(System.currentTimeMillis()))
+                .userName(userFullName)
+                .channelName(channelInfo.getId())
+                .question(question)
+                .answer(answer)
+                .questionSymbolsCount(StringUtils.length(question))
+                .answerSymbolsCount(StringUtils.length(answer))
+                .build();
+        chatHistoryLogService.logCommunicationForUser(userFullName, logEntry);
         return ctx.ack();
     }
+
 }

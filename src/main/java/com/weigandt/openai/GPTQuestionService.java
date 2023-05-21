@@ -8,6 +8,7 @@ import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import static com.weigandt.Constants.SEARCH.REPHRASE_PROMPT;
 import static java.util.Collections.singletonList;
 
 @Service
+@Slf4j
 @Getter
 @RequiredArgsConstructor
 public class GPTQuestionService {
@@ -43,6 +45,10 @@ public class GPTQuestionService {
     }
 
     public String ask(String question) {
+        if (StringUtils.isBlank(question)) {
+            log.warn("Empty question is not a target to answer");
+            return "I can't answer to empty questions";
+        }
         ChatCompletionRequest request = ChatCompletionRequest.builder()
                 .model(getQaModel())
                 .temperature(.0)

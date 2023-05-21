@@ -6,11 +6,14 @@ import com.weigandt.openai.GPTQuestionService;
 import com.weigandt.pinecone.VectorSearchService;
 import io.pinecone.proto.SingleQueryResults;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AnswerService {
 
@@ -19,6 +22,10 @@ public class AnswerService {
     private final VectorSearchService vectorSearchService;
 
     public String getAnswer(String question, List<Message> chatHistory, String botUserId) {
+        if (StringUtils.isBlank(question)) {
+            log.warn("Empty question is not a target to answer");
+            return "I can't answer to empty questions";
+        }
         // 1 - reformat question (with chat history)
         String rephrasedQuestion = gptQuestionService.rephraseQuestion(question, chatHistory, botUserId);
 
