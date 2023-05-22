@@ -34,6 +34,7 @@ public class ChatHistoryLogService {
     private String basePath;
 
     private static final Gson gson = new GsonBuilder()
+            .disableHtmlEscaping()
             .setPrettyPrinting()
             .create();
 

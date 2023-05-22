@@ -3,9 +3,9 @@ package com.weigandt.extras.text;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -17,18 +17,16 @@ public class TextProcessorService {
     private Integer chunkSize;
     @Value("${file.processor.overlap}")
     private Integer overlap;
+    private final TextSplitterator textSplitterator;
 
-    private final ApplicationContext applicationContext;
-
-    private TextSplitterator getTextSplitterator() {
-        TextSplitterator splitterator = applicationContext.getBean(TextSplitterator.class);
-        splitterator.setOverlap(getOverlap());
-        splitterator.setChunkSize(getChunkSize());
-        return splitterator;
+    @PostConstruct
+    private void postConstruct() {
+        textSplitterator.setOverlap(getOverlap());
+        textSplitterator.setChunkSize(getChunkSize());
     }
 
     public List<String> splitToChunks(String content) {
-        return getTextSplitterator().split(content);
+        return textSplitterator.split(content);
     }
 
 }

@@ -8,7 +8,9 @@ import lombok.Data;
 public class LogMsgJsonBuilder {
     private String datetime;
     private String userName;
+    private String channelId;
     private String channelName;
+    private String channelType;
     private String question;
     private String answer;
     private int questionSymbolsCount;

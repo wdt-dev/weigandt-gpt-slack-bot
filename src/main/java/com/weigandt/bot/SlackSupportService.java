@@ -14,8 +14,6 @@ import com.slack.api.model.Message;
 import com.slack.api.model.block.LayoutBlock;
 import com.slack.api.model.block.SectionBlock;
 import com.slack.api.model.block.composition.MarkdownTextObject;
-import com.slack.api.model.event.AppMentionEvent;
-import com.slack.api.model.event.MessageEvent;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -42,18 +40,11 @@ public class SlackSupportService {
         return history.getMessages();
     }
 
-    public boolean isCorrectToAnswerMsg(MessageEvent event, EventContext ctx) {
-        boolean botMentioned = StringUtils.contains(event.getText(), String.format("<@%s>", ctx.getBotUserId()));
-        String channelType = event.getChannelType();
-
-        return botMentioned || "im".equals(channelType);
-    }
-
-    public boolean isCorrectToAnswerMsg(AppMentionEvent event, EventContext ctx) {
-        boolean botMentioned = StringUtils.contains(event.getText(), String.format("<@%s>", ctx.getBotUserId()));
-        String channelType = event.getChannel();
-
-        return botMentioned || "im".equals(channelType);
+    public boolean isCorrectToAnswerMsg(String text, EventContext ctx, boolean isIm) {
+        if (isIm) {
+            return StringUtils.isNotBlank(text);
+        }
+        return StringUtils.contains(text, String.format("<@%s>", ctx.getBotUserId()));
     }
 
     public String cleanupMessage(String input) {
@@ -85,10 +76,8 @@ public class SlackSupportService {
                 .channel(channel)
                 .token(botToken)
                 .build();
-        Conversation channelInfo = client.conversationsInfo(request).getChannel();
-        return channelInfo;
+        return client.conversationsInfo(request).getChannel();
     }
-
 
     public String getCachedUserFullName(String user, MethodsClient client, String botToken) throws SlackApiException, IOException {
         if (!userIdToUserName.containsKey(user)) {

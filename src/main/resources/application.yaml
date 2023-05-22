@@ -1,13 +1,17 @@
 logging.level:
   com.slack.api: DEBUG
 server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
   port: 3000
-  ssl:
-    key-store: classpath:gptslackbot.p12
-    key-store-password:
-    key-store-type: pkcs12
-    key-alias: gptslackbot
-    key-password:
+#  ssl:
+#    key-store: classpath:gptslackbot.p12
+#    key-store-password:
+#    key-store-type: pkcs12
+#    key-alias: gptslackbot
+#    key-password:
 
 openai:
   apikey:

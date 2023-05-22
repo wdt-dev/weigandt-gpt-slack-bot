@@ -1,10 +1,12 @@
 package com.weigandt.answering;
 
 import com.slack.api.model.Message;
+import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.weigandt.openai.EmbeddingsService;
 import com.weigandt.openai.GPTQuestionService;
 import com.weigandt.pinecone.VectorSearchService;
 import io.pinecone.proto.SingleQueryResults;
+import io.reactivex.Flowable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -42,5 +44,9 @@ public class AnswerService {
 
     public String getDefaultGptAnswer(String question) {
         return gptQuestionService.ask(question);
+    }
+
+    public Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question) {
+        return gptQuestionService.askWithStreaming(question);
     }
 }

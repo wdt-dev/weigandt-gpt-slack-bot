@@ -1,11 +1,13 @@
 package com.weigandt.openai;
 
 import com.slack.api.model.Message;
+import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
+import io.reactivex.Flowable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +42,13 @@ public class GPTQuestionService {
                 .temperature(.0)
                 .messages(prepareQuestion(question, chatHistory, botUserId))
                 .build();
-        ChatCompletionResult completion = openAiService.createChatCompletion(request);
-        return getFirstMessage(completion);
+        try {
+            ChatCompletionResult completion = openAiService.createChatCompletion(request);
+            return getFirstMessage(completion);
+        } catch (Exception ex) {
+            log.warn("Error answering question: {}", question, ex);
+        }
+        return "There is no answer to your question";
     }
 
     public String ask(String question) {
@@ -54,8 +61,27 @@ public class GPTQuestionService {
                 .temperature(.0)
                 .messages(singletonList(createUserChatMessage(question)))
                 .build();
-        ChatCompletionResult completion = openAiService.createChatCompletion(request);
-        return getFirstMessage(completion);
+        try {
+            ChatCompletionResult completion = openAiService.createChatCompletion(request);
+            return getFirstMessage(completion);
+        } catch (Exception ex) {
+            log.warn("Error answering question: {}", question, ex);
+        }
+        return "There is no answer to your question";
+    }
+
+    public Flowable<ChatCompletionChunk> askWithStreaming(String question) {
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model(getQaModel())
+                .temperature(.0)
+                .messages(singletonList(createUserChatMessage(question)))
+                .build();
+        try {
+            return openAiService.streamChatCompletion(request);
+        } catch (Exception ex) {
+            log.warn("Error answering question: {}", question, ex);
+        }
+        return Flowable.empty();
     }
 
     public String askWithExtras(String question, List<String> extras) {
