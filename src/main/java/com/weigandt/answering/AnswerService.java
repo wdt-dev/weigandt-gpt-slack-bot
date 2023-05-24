@@ -42,6 +42,21 @@ public class AnswerService {
         return gptQuestionService.askWithExtras(rephrasedQuestion, textBlocksFromVectorStorage);
     }
 
+    public Flowable<ChatCompletionChunk> getAnswerStreaming(String question, List<Message> chatHistory, String botUserId) {
+        // 1 - reformat question (with chat history)
+        String rephrasedQuestion = gptQuestionService.rephraseQuestion(question, chatHistory, botUserId);
+
+        //  2 - create embedding from question
+        List<Float> questionEmbedding = embeddingsService.createEmbeddingsForPinecone(rephrasedQuestion);
+
+        //  3 - get vectors with data
+        SingleQueryResults vectorsResult = vectorSearchService.search(questionEmbedding);
+        List<String> textBlocksFromVectorStorage = vectorSearchService.getTextBlocks(vectorsResult);
+
+        //  4 - ask GPT-4 for answer with data from vectors
+        return gptQuestionService.askWithExtrasStream(rephrasedQuestion, textBlocksFromVectorStorage);
+    }
+
     public String getDefaultGptAnswer(String question) {
         return gptQuestionService.ask(question);
     }

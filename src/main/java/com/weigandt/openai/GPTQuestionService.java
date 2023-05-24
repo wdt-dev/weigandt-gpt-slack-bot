@@ -94,6 +94,20 @@ public class GPTQuestionService {
         return getFirstMessage(completion);
     }
 
+    public Flowable<ChatCompletionChunk> askWithExtrasStream(String question, List<String> extras) {
+        ChatCompletionRequest request = ChatCompletionRequest.builder()
+                .model(getQaModel())
+                .temperature(.0)
+                .messages(prepareQuestionWithExtras(question, extras))
+                .build();
+        try {
+            return openAiService.streamChatCompletion(request);
+        } catch (Exception ex) {
+            log.warn("Error answering question: {}", question, ex);
+        }
+        return Flowable.empty();
+    }
+
     private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory, String botUserId) {
         String transformedChatHistory = chatHistory.stream()
                 .sorted(Comparator.comparing(Message::getTs))

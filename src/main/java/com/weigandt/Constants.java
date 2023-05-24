@@ -12,6 +12,9 @@ public class Constants {
         public static final String CMD_EXTRAS = "/extras";
         public static final String CMD_IMPORT = "/import";
         public static final String LOG_EXT = ".log";
+        public static final String CHANNEL = "channel";
+        public static final String IM = "im";
+
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

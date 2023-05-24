@@ -1,7 +1,5 @@
 package com.weigandt.bot;
 
-import com.slack.api.bolt.context.builtin.EventContext;
-import com.slack.api.bolt.context.builtin.SlashCommandContext;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.conversations.ConversationsHistoryRequest;
@@ -31,20 +29,20 @@ public class SlackSupportService {
     private final Map<String, String> userIdToUserName = new ConcurrentHashMap<>();
     private final Map<String, Conversation> channelsCache = new ConcurrentHashMap<>();
 
-    public List<Message> getMsgHistory(String channel, SlashCommandContext ctx) throws SlackApiException, IOException {
+    public List<Message> getMsgHistory(String channel, ContextDto ctxDto) throws SlackApiException, IOException {
         ConversationsHistoryRequest historyRequest = ConversationsHistoryRequest.builder()
                 .channel(channel)
-                .token(ctx.getBotToken())
+                .token(ctxDto.botToken())
                 .build();
-        ConversationsHistoryResponse history = ctx.client().conversationsHistory(historyRequest);
+        ConversationsHistoryResponse history = ctxDto.client().conversationsHistory(historyRequest);
         return history.getMessages();
     }
 
-    public boolean isCorrectToAnswerMsg(String text, EventContext ctx, boolean isIm) {
+    public boolean isCorrectToAnswerMsg(String text, String botUserId, boolean isIm) {
         if (isIm) {
             return StringUtils.isNotBlank(text);
         }
-        return StringUtils.contains(text, String.format("<@%s>", ctx.getBotUserId()));
+        return StringUtils.contains(text, String.format("<@%s>",botUserId));
     }
 
     public String cleanupMessage(String input) {
