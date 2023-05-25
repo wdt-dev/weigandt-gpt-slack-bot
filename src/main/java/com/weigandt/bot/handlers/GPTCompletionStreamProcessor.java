@@ -39,6 +39,7 @@ public class GPTCompletionStreamProcessor {
     private final CommandDto dto;
     private final StringBuilder sb = new StringBuilder();
     private long startTimeMillis = System.currentTimeMillis();
+    private boolean isTypingSent = false;
 
     public void initAnswering() throws IOException, SlackApiException {
         MethodsClient client = contextDto.client();
@@ -77,8 +78,9 @@ public class GPTCompletionStreamProcessor {
         if (startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > 10000) {
             shouldWaitForAnswer();
             startTimeMillis = 0;
-        } else if (startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > 3000) {
+        } else if (!isTypingSent && startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > 3000) {
             initAnswering();
+            isTypingSent = true;
         }
 
         Optional<String> finishReason = chatCompletionChunk
