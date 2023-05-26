@@ -2,7 +2,6 @@ package com.weigandt.bot.handlers.commands;
 
 import com.slack.api.bolt.context.builtin.SlashCommandContext;
 import com.slack.api.bolt.response.Response;
-import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.CommandDto;
@@ -10,7 +9,6 @@ import com.weigandt.bot.ContextDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.bot.handlers.AbstractGptChatHandler;
 import com.weigandt.history.ChatHistoryLogService;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 
@@ -24,11 +22,7 @@ public abstract class AbstractGptChatCommandHandler extends AbstractGptChatHandl
     }
 
     public Response makeChatGptGreatAgain(SlashCommandContext ctx, CommandDto dto) throws SlackApiException, IOException {
-        Logger logger = ctx.logger;
-        MethodsClient client = ctx.client();
-        String botToken = ctx.getBotToken();
-        ContextDto contextDto = new ContextDto(botToken, client, logger, ctx.getBotId(), ctx.getChannelId());
-
+        ContextDto contextDto = buildCommandContext(ctx);
         makeChatGptGreatAgain(contextDto, dto);
         return ctx.ack();
     }

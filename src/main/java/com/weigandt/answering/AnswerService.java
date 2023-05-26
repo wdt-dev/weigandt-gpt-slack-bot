@@ -64,4 +64,12 @@ public class AnswerService {
     public Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question) {
         return gptQuestionService.askWithStreaming(question);
     }
+
+    public long getSoftThresholdMs() {
+        return gptQuestionService.getSoftThresholdMs();
+    }
+
+    public long getHardThresholdMs() {
+        return gptQuestionService.getHardThresholdMs();
+    }
 }

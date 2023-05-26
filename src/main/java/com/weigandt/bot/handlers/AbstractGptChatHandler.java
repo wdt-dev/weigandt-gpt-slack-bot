@@ -1,5 +1,7 @@
 package com.weigandt.bot.handlers;
 
+import com.slack.api.bolt.context.builtin.EventContext;
+import com.slack.api.bolt.context.builtin.SlashCommandContext;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.Conversation;
 import com.slack.api.model.Message;
@@ -9,16 +11,19 @@ import com.weigandt.bot.CommandDto;
 import com.weigandt.bot.ContextDto;
 import com.weigandt.bot.EventDto;
 import com.weigandt.bot.SlackSupportService;
-import com.weigandt.bot.handlers.GPTCompletionStreamProcessor;
 import com.weigandt.history.ChatHistoryLogService;
 import io.reactivex.Flowable;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @RequiredArgsConstructor
+@Getter
 public abstract class AbstractGptChatHandler {
 
     private final AnswerService answerService;
@@ -30,7 +35,7 @@ public abstract class AbstractGptChatHandler {
         Conversation channelInfo = slackSupportService.getCachedChannelInfo(contextDto.channelId(), contextDto.client(), contextDto.botToken());
 
         if (!slackSupportService.isCorrectToAnswerMsg(dto.getInputText(), contextDto.botUserId(), channelInfo.isIm())) {
-            logger.info("Bot not tagged or isn't an IM channel , ignore");
+            logger.info("Bot not tagged or isn't an IM channel, ignore");
             return;
         }
 
@@ -59,5 +64,25 @@ public abstract class AbstractGptChatHandler {
                 new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, contextDto, channelInfo, dto);
         Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerStreaming(question, messages, contextDto.botUserId());
         answerStream.doOnError(processor::processException).subscribe(processor::processChunks);
+    }
+
+    protected ContextDto buildEventContext(EventContext ctx) {
+        String botToken = ctx.getBotToken();
+        long softThresholdMs = getAnswerService().getSoftThresholdMs();
+        long hardThresholdMs = getAnswerService().getHardThresholdMs();
+        String botUserId = ctx.getBotUserId();
+        String channelId = ctx.getChannelId();
+        return new ContextDto(botToken, ctx.client(), ctx.getLogger(), botUserId, channelId,
+                softThresholdMs, hardThresholdMs);
+    }
+
+    protected ContextDto buildCommandContext(SlashCommandContext ctx) {
+        String botToken = ctx.getBotToken();
+        long softThresholdMs = getAnswerService().getSoftThresholdMs();
+        long hardThresholdMs = getAnswerService().getHardThresholdMs();
+        String botUserId = ctx.getBotUserId();
+        String channelId = ctx.getChannelId();
+        return new ContextDto(botToken, ctx.client(), ctx.getLogger(), botUserId, channelId,
+                softThresholdMs, hardThresholdMs);
     }
 }

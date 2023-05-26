@@ -20,6 +20,7 @@ public class Constants {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class OPENAI {
         public static final String VARIOUS_TEXT = "variousText";
+        public static final String ERROR_ANSWERING_QUESTION = "Error answering question: {}";
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

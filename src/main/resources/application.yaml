@@ -19,6 +19,9 @@ openai:
     model: text-embedding-ada-002
   qa:
     model: gpt-3.5-turbo
+    threshold:
+      soft: 3000
+      hard: 10000
 
 pinecone:
   apikey: 

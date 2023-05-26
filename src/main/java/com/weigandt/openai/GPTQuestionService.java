@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.weigandt.Constants.OPENAI.ERROR_ANSWERING_QUESTION;
 import static com.weigandt.Constants.SEARCH.PARAMS.CHAT_HISTORY;
 import static com.weigandt.Constants.SEARCH.PARAMS.CONTEXT;
 import static com.weigandt.Constants.SEARCH.PARAMS.QUESTION;
@@ -34,6 +35,10 @@ public class GPTQuestionService {
 
     @Value("${openai.qa.model}")
     private String qaModel;
+    @Value("${openai.qa.threshold.soft}")
+    private long softThresholdMs;
+    @Value("${openai.qa.threshold.hard}")
+    private long hardThresholdMs;
     private final OpenAiService openAiService;
 
     public String rephraseQuestion(String question, List<Message> chatHistory, String botUserId) {
@@ -46,7 +51,7 @@ public class GPTQuestionService {
             ChatCompletionResult completion = openAiService.createChatCompletion(request);
             return getFirstMessage(completion);
         } catch (Exception ex) {
-            log.warn("Error answering question: {}", question, ex);
+            log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return "There is no answer to your question";
     }
@@ -65,7 +70,7 @@ public class GPTQuestionService {
             ChatCompletionResult completion = openAiService.createChatCompletion(request);
             return getFirstMessage(completion);
         } catch (Exception ex) {
-            log.warn("Error answering question: {}", question, ex);
+            log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return "There is no answer to your question";
     }
@@ -79,7 +84,7 @@ public class GPTQuestionService {
         try {
             return openAiService.streamChatCompletion(request);
         } catch (Exception ex) {
-            log.warn("Error answering question: {}", question, ex);
+            log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return Flowable.empty();
     }
@@ -103,7 +108,7 @@ public class GPTQuestionService {
         try {
             return openAiService.streamChatCompletion(request);
         } catch (Exception ex) {
-            log.warn("Error answering question: {}", question, ex);
+            log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return Flowable.empty();
     }

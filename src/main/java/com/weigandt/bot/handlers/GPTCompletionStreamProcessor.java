@@ -75,10 +75,10 @@ public class GPTCompletionStreamProcessor {
                 .collect(Collectors.joining(SPACE));
         sb.append(answerChunk);
         long currentTimeMillis = System.currentTimeMillis();
-        if (startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > 10000) {
+        if (startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > contextDto.hardThresholdMs()) {
             shouldWaitForAnswer();
             startTimeMillis = 0;
-        } else if (!isTypingSent && startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > 3000) {
+        } else if (!isTypingSent && startTimeMillis != 0 && (currentTimeMillis - startTimeMillis) > contextDto.softThresholdMs()) {
             initAnswering();
             isTypingSent = true;
         }
