@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Getter
 public class SlackSupportService {
@@ -42,7 +44,7 @@ public class SlackSupportService {
         if (isIm) {
             return StringUtils.isNotBlank(text);
         }
-        return StringUtils.contains(text, String.format("<@%s>",botUserId));
+        return StringUtils.contains(text, String.format("<@%s>", botUserId));
     }
 
     public String cleanupMessage(String input) {
@@ -85,9 +87,16 @@ public class SlackSupportService {
         return userIdToUserName.get(user);
     }
 
-    public Conversation getCachedChannelInfo(String channel, MethodsClient client, String botToken) throws SlackApiException, IOException {
+    public Conversation getCachedChannelInfo(ContextDto contextDto) throws SlackApiException, IOException {
+        String channel = contextDto.channelId();
+        MethodsClient client = contextDto.client();
+        String botToken = contextDto.botToken();
         if (!channelsCache.containsKey(channel)) {
             Conversation channelInfo = getChannelInfo(client, channel, botToken);
+            if (isNull(channelInfo)) {
+                contextDto.logger().debug("Channel info is empty");
+                return null;
+            }
             channelsCache.put(channel, channelInfo);
         }
         return channelsCache.get(channel);

@@ -14,7 +14,8 @@ public class Constants {
         public static final String LOG_EXT = ".log";
         public static final String CHANNEL = "channel";
         public static final String IM = "im";
-
+        public static final String CHAT_POST_MESSAGE_FAILED = "chat.postMessage failed: {}";
+        public static final String NO_CHAT_ACCESS = "The bot can't get channel info for channel id:{}, pls check bot access";
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

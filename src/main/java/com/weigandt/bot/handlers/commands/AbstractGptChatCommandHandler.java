@@ -22,7 +22,7 @@ public abstract class AbstractGptChatCommandHandler extends AbstractGptChatHandl
     }
 
     public Response makeChatGptGreatAgain(SlashCommandContext ctx, CommandDto dto) throws SlackApiException, IOException {
-        ContextDto contextDto = buildCommandContext(ctx);
+        ContextDto contextDto = buildContext(ctx);
         makeChatGptGreatAgain(contextDto, dto);
         return ctx.ack();
     }

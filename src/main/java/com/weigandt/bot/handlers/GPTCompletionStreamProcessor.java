@@ -26,12 +26,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.weigandt.Constants.SLACK_BOT.CHANNEL;
+import static com.weigandt.Constants.SLACK_BOT.CHAT_POST_MESSAGE_FAILED;
 import static com.weigandt.Constants.SLACK_BOT.IM;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @RequiredArgsConstructor
 public class GPTCompletionStreamProcessor {
-    private static final String CHAT_POST_MESSAGE_FAILED = "chat.postMessage failed: {}";
+
     private final SlackSupportService slackSupportService;
     private final ChatHistoryLogService chatHistoryLogService;
     private final ContextDto contextDto;

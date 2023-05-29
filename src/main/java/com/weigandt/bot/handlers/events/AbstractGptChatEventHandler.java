@@ -21,7 +21,7 @@ public abstract class AbstractGptChatEventHandler extends AbstractGptChatHandler
 
     public Response makeChatGptGreatAgain(EventContext ctx, EventDto dto)
             throws SlackApiException, IOException {
-        ContextDto contextDto = buildEventContext(ctx);
+        ContextDto contextDto = buildContext(ctx);
         super.makeChatGptGreatAgain(contextDto, dto);
         return ctx.ack();
     }
