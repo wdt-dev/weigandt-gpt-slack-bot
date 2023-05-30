@@ -11,6 +11,7 @@ import com.weigandt.bot.EventDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.history.ChatHistoryLogService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -28,6 +29,9 @@ public class AppMentionEventHandler extends AbstractGptChatEventHandler implemen
     public Response apply(EventsApiPayload<AppMentionEvent> payload, EventContext ctx)
             throws IOException, SlackApiException {
         AppMentionEvent event = payload.getEvent();
+        Logger logger = ctx.logger;
+        logger.debug("AppMentionEventHandler content:{}", event);
+
         EventDto dto = new EventDto(event.getText(), event.getUser(), event.getThreadTs(), event.getTs());
         return makeChatGptGreatAgain(ctx, dto);
     }

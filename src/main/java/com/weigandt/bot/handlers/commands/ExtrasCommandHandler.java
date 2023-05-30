@@ -10,6 +10,7 @@ import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.CommandDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.history.ChatHistoryLogService;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -25,6 +26,9 @@ public class ExtrasCommandHandler extends AbstractGptChatCommandHandler implemen
     @Override
     public Response apply(SlashCommandRequest payload, SlashCommandContext ctx) throws SlackApiException, IOException {
         SlashCommandPayload cmdPayload = payload.getPayload();
+        Logger logger = ctx.logger;
+        logger.debug("ExtrasCommandHandler content:{}", cmdPayload);
+
         CommandDto dto = new CommandDto(cmdPayload.getText(), cmdPayload.getUserName());
         return makeChatGptGreatAgain(ctx, dto);
     }
