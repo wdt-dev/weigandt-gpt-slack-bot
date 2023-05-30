@@ -1,7 +1,17 @@
 logging.level:
   com.slack.api: DEBUG
 server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
   port: 3000
+  ssl:
+    key-store:
+    key-store-password:
+    key-store-type: pkcs12
+    key-alias: gptslackbot
+    key-password:
 
 openai:
   apikey:
@@ -9,9 +19,12 @@ openai:
     model: text-embedding-ada-002
   qa:
     model: gpt-3.5-turbo
+    threshold:
+      soft: 3000
+      hard: 10000
 
 pinecone:
-  apikey:
+  apikey: 
   index:
     name: test-embeddings
   environment: us-west4-gcp
@@ -25,3 +38,9 @@ file:
     chunk:
       size: 30
     overlap: 10
+chat:
+  history:
+    base:
+      path: ./logs
+    max:
+      size: 5Mb

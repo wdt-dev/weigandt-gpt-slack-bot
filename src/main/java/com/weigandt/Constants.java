@@ -9,14 +9,19 @@ public class Constants {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class SLACK_BOT {
         public static final String CMD_HELLO = "/hello";
+        public static final String CMD_EXTRAS = "/extras";
         public static final String CMD_IMPORT = "/import";
-        public static final String BOT_ID = "U0560P08DME";
-
+        public static final String LOG_EXT = ".log";
+        public static final String CHANNEL = "channel";
+        public static final String IM = "im";
+        public static final String CHAT_POST_MESSAGE_FAILED = "chat.postMessage failed: {}";
+        public static final String NO_CHAT_ACCESS = "The bot can't get channel info for channel id:{}, pls check bot access";
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class OPENAI {
         public static final String VARIOUS_TEXT = "variousText";
+        public static final String ERROR_ANSWERING_QUESTION = "Error answering question: {}";
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

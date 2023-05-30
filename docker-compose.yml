@@ -1,6 +1,12 @@
 version: "3.9"
 services:
   bot:
+    container_name: weigandt-gpt-slack-bot
     build: .
     ports:
       - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - /home/kumanets/logs:/usr/src/gptslackbot/logs
+      - /home/kumanets/ssl:/usr/src/gptslackbot/ssl
