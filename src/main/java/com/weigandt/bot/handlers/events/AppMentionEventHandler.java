@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 @Service
 @Slf4j
 public class AppMentionEventHandler extends AbstractGptChatEventHandler implements BoltEventHandler<AppMentionEvent> {
@@ -32,7 +34,7 @@ public class AppMentionEventHandler extends AbstractGptChatEventHandler implemen
         Logger logger = ctx.logger;
         logger.debug("AppMentionEventHandler content:{}", event);
 
-        EventDto dto = new EventDto(event.getText(), event.getUser(), event.getThreadTs(), event.getTs());
+        EventDto dto = new EventDto(event, EMPTY);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }

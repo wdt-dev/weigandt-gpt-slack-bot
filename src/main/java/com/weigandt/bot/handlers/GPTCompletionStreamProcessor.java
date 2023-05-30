@@ -90,7 +90,7 @@ public class GPTCompletionStreamProcessor {
                 .filter(StringUtils::isNotBlank).findFirst();
         if (finishReason.isPresent()) {
             logger.info("Stream finish reason: {}", finishReason.get());
-            String respText = String.format("<@%s> %s", dto.getUser(), sb);
+            String respText = String.format("<@%s> %s %s", dto.getUser(), dto.getAnswerPrefix(), sb);
             RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
                     .channel(channelInfo.getId())
                     .threadTs(getThreadTs())

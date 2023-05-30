@@ -9,9 +9,11 @@ public class CommandDto {
     protected String question;
     protected final String inputText;
     protected final String user;
+    protected final String answerPrefix;
 
-    public CommandDto(String inputText, String user) {
+    public CommandDto(String inputText, String user, String answerPrefix) {
         this.inputText = inputText;
         this.user = user;
+        this.answerPrefix = answerPrefix;
     }
 }

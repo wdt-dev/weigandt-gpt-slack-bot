@@ -40,10 +40,8 @@ public class MessageChangedEventHandler extends AbstractGptChatEventHandler impl
             log.debug("Message content equals, no actions needed");
             return ctx.ack();
         }
-
-        String user = event.getMessage().getUser();
-        String threadTs = event.getMessage().getThreadTs();
-        EventDto dto = new EventDto(newText, user, threadTs, event.getTs());
+        String prefix = "Your msg was changed, new answer:";
+        EventDto dto = new EventDto(event, prefix);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }

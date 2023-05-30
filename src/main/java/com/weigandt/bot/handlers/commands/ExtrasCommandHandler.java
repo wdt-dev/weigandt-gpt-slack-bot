@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 @Service
 public class ExtrasCommandHandler extends AbstractGptChatCommandHandler implements SlashCommandHandler {
     public ExtrasCommandHandler(AnswerService answerService,
@@ -29,7 +31,7 @@ public class ExtrasCommandHandler extends AbstractGptChatCommandHandler implemen
         Logger logger = ctx.logger;
         logger.debug("ExtrasCommandHandler content:{}", cmdPayload);
 
-        CommandDto dto = new CommandDto(cmdPayload.getText(), cmdPayload.getUserName());
+        CommandDto dto = new CommandDto(cmdPayload.getText(), cmdPayload.getUserName(), EMPTY);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }
