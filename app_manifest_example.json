@@ -1,0 +1,63 @@
+{
+    "display_information": {
+        "name": "gptslackbot",
+        "description": "This is GPT powered Java bot",
+        "background_color": "#0d3ed4"
+    },
+    "features": {
+        "bot_user": {
+            "display_name": "gptslackbot",
+            "always_online": true
+        },
+        "slash_commands": [
+            {
+                "command": "/hello",
+                "url": "https://_your_domain_name_here:3000/slack/events",
+                "description": "Get greeting from bot",
+                "should_escape": false
+            },
+            {
+                "command": "/extras",
+                "url": "https://_your_domain_name_here:3000/slack/events",
+                "description": "This allows you to use advanced GPT responses",
+                "should_escape": false
+            }
+        ]
+    },
+    "oauth_config": {
+        "scopes": {
+            "user": [
+                "im:history"
+            ],
+            "bot": [
+                "app_mentions:read",
+                "chat:write",
+                "chat:write.public",
+                "commands",
+                "im:history",
+                "im:write",
+                "users:read",
+                "channels:read",
+                "groups:read",
+                "mpim:read",
+                "im:read"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "request_url": "https://_your_domain_name_here:3000/slack/events",
+            "user_events": [
+                "message.app_home",
+                "message.im"
+            ],
+            "bot_events": [
+                "app_mention",
+                "message.im"
+            ]
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": false,
+        "token_rotation_enabled": false
+    }
+}
