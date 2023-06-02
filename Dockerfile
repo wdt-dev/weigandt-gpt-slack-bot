@@ -10,7 +10,7 @@ RUN mvn package -DskipTests
 
 FROM amazoncorretto:17.0.7
 ARG BUILD_FOLDER=/builddir/app/target
-COPY --from=build ${BUILD_FOLDER}/*.jar /usr/src/gptslackbot/gptslackbot.jar
-WORKDIR /usr/src/gptslackbot
+COPY --from=build ${BUILD_FOLDER}/*.jar /usr/gptslackbot/gptslackbot.jar
+WORKDIR /usr/gptslackbot
 ENTRYPOINT ["java","-jar","gptslackbot.jar"]
 EXPOSE 3000

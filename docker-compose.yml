@@ -8,5 +8,5 @@ services:
     env_file:
       - .env
     volumes:
-      - /home/kumanets/logs:/usr/src/gptslackbot/logs
-      - /home/kumanets/ssl:/usr/src/gptslackbot/ssl
+      - /usr/gptslackbot/logs:/usr/gptslackbot/logs
+      - /usr/gptslackbot/ssl:/usr/gptslackbot/ssl
