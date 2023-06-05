@@ -1,5 +1,9 @@
 logging.level:
   com.slack.api: DEBUG
+spring:
+  profiles:
+    active: create-embeddings,use-embeddings
+
 server:
   servlet:
     encoding:
