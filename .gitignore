@@ -1,7 +1,9 @@
 # remove built
 /target/
 /.idea/
-*.env
+.env
+mysql.env
+
 docker-local.yml
 /ssl/
 /logs/
