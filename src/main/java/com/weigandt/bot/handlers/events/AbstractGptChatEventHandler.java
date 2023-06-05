@@ -8,6 +8,7 @@ import com.weigandt.bot.ContextDto;
 import com.weigandt.bot.EventDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.bot.handlers.AbstractGptChatHandler;
+import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
 
 import java.io.IOException;
@@ -15,8 +16,9 @@ import java.io.IOException;
 public abstract class AbstractGptChatEventHandler extends AbstractGptChatHandler {
     protected AbstractGptChatEventHandler(AnswerService answerService,
                                           SlackSupportService slackSupportService,
-                                          ChatHistoryLogService chatHistoryLogService) {
-        super(answerService, slackSupportService, chatHistoryLogService);
+                                          ChatHistoryLogService chatHistoryLogService,
+                                          TokenUsageService tokenUsageService) {
+        super(answerService, slackSupportService, chatHistoryLogService, tokenUsageService);
     }
 
     public Response makeChatGptGreatAgain(EventContext ctx, EventDto dto)

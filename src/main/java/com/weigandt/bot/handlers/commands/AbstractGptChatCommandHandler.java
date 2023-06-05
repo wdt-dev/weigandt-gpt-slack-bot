@@ -8,6 +8,7 @@ import com.weigandt.bot.CommandDto;
 import com.weigandt.bot.ContextDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.bot.handlers.AbstractGptChatHandler;
+import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
 
 import java.io.IOException;
@@ -17,8 +18,9 @@ public abstract class AbstractGptChatCommandHandler extends AbstractGptChatHandl
 
     protected AbstractGptChatCommandHandler(AnswerService answerService,
                                             SlackSupportService slackSupportService,
-                                            ChatHistoryLogService chatHistoryLogService) {
-        super(answerService, slackSupportService, chatHistoryLogService);
+                                            ChatHistoryLogService chatHistoryLogService,
+                                            TokenUsageService tokenUsageService) {
+        super(answerService, slackSupportService, chatHistoryLogService, tokenUsageService);
     }
 
     public Response makeChatGptGreatAgain(SlashCommandContext ctx, CommandDto dto) throws SlackApiException, IOException {

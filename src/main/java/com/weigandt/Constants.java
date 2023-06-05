@@ -16,6 +16,7 @@ public class Constants {
         public static final String IM = "im";
         public static final String CHAT_POST_MESSAGE_FAILED = "chat.postMessage failed: {}";
         public static final String NO_CHAT_ACCESS = "The bot can't get channel info for channel id:{}, pls check bot access";
+        public static final String TOKEN_LIMIT_EXCEEDED = "Your day limit exceeded, welcome back another day. Symbols spent: %s";
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,6 +24,8 @@ public class Constants {
         public static final String FEATURE_NOT_ENABLED_MSG = "Feature not enabled, pls check your profiles";
         public static final String VARIOUS_TEXT = "variousText";
         public static final String ERROR_ANSWERING_QUESTION = "Error answering question: {}";
+        public static final Integer DEFAULT_SOFT_RESTRICTION = 50000;
+        public static final Integer DEFAULT_HARD_RESTRICTION = 100000;
     }
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

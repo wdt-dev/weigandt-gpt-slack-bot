@@ -13,6 +13,8 @@ import com.weigandt.bot.CommandDto;
 import com.weigandt.bot.ContextDto;
 import com.weigandt.bot.EventDto;
 import com.weigandt.bot.SlackSupportService;
+import com.weigandt.chatsettings.dto.TokenUsageDto;
+import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
 import com.weigandt.history.LogMsgJsonBuilder;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class GPTCompletionStreamProcessor {
 
     private final SlackSupportService slackSupportService;
     private final ChatHistoryLogService chatHistoryLogService;
+    private final TokenUsageService tokenUsageService;
     private final ContextDto contextDto;
     private final Conversation channelInfo;
     private final CommandDto dto;
@@ -89,7 +92,7 @@ public class GPTCompletionStreamProcessor {
                 .map(ChatCompletionChoice::getFinishReason)
                 .filter(StringUtils::isNotBlank).findFirst();
         if (finishReason.isPresent()) {
-            logger.info("Stream finish reason: {}", finishReason.get());
+            logger.debug("Stream finish reason: {}", finishReason.get());
             String respText = String.format("<@%s> %s %s", dto.getUser(), dto.getAnswerPrefix(), sb);
             RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
                     .channel(channelInfo.getId())
@@ -102,6 +105,8 @@ public class GPTCompletionStreamProcessor {
                 return;
             }
             String userFullName = slackSupportService.getCachedUserFullName(dto.getUser(), client, botToken);
+            int questionSymbolsCount = StringUtils.length(dto.getQuestion());
+            int answerSymbolsCount = StringUtils.length(sb);
             LogMsgJsonBuilder logEntry = LogMsgJsonBuilder.builder()
                     .datetime(String.valueOf(System.currentTimeMillis()))
                     .userName(userFullName)
@@ -110,10 +115,33 @@ public class GPTCompletionStreamProcessor {
                     .channelType(getChannelType(channelInfo))
                     .question(dto.getQuestion())
                     .answer(sb.toString())
-                    .questionSymbolsCount(StringUtils.length(dto.getQuestion()))
-                    .answerSymbolsCount(StringUtils.length(sb))
+                    .questionSymbolsCount(questionSymbolsCount)
+                    .answerSymbolsCount(answerSymbolsCount)
                     .build();
             chatHistoryLogService.logCommunicationForUser(userFullName, logEntry);
+            TokenUsageDto tokenUsageDto = new TokenUsageDto(userFullName, questionSymbolsCount, answerSymbolsCount);
+            tokenUsageService.saveStatistics(tokenUsageDto);
+            checkSoftThreshold(userFullName);
+        }
+    }
+
+    private void checkSoftThreshold(String userName) throws SlackApiException, IOException {
+        MethodsClient client = contextDto.client();
+        String botToken = contextDto.botToken();
+        Logger logger = contextDto.logger();
+        if (tokenUsageService.isSoftThresholdExceeded(userName)) {
+            Integer tokenUsedTotal = tokenUsageService.getTodayStatistics(userName).get().getTokenUsedTotal();
+            Integer threshold = tokenUsageService.getUserTokenRestriction(userName).hardThreshold();
+            String respText = String.format("Don't forget about limits - not more than %s symbols per day. Symbols spent: %s", threshold, tokenUsedTotal);
+            RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
+                    .channel(channelInfo.getId())
+                    .threadTs(getThreadTs())
+                    .token(botToken)
+                    .blocks(slackSupportService.wrapInBlock(respText));
+            ChatPostMessageResponse messageResponse = client.chatPostMessage(postMsgConfigurator);
+            if (!messageResponse.isOk()) {
+                logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+            }
         }
     }
 
