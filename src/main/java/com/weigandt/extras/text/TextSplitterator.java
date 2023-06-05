@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @Setter
 @Getter
+@Profile("create-embeddings")
 public class TextSplitterator {
     private Integer chunkSize;
     private Integer overlap;

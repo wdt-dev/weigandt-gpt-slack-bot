@@ -30,7 +30,7 @@ public class ChatHistoryLogService {
 
     private static final Type LIST_OF_LOGS_TYPE = new TypeToken<List<LogMsgJsonBuilder>>() {
     }.getType();
-    @Value("${chat.history.base.path}")
+    @Value("${chat.history.base.path:./}")
     private String basePath;
 
     private static final Gson gson = new GsonBuilder()

@@ -11,8 +11,10 @@ import io.reactivex.Flowable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.weigandt.Constants.OPENAI.ERROR_ANSWERING_QUESTION;
+import static com.weigandt.Constants.OPENAI.FEATURE_NOT_ENABLED_MSG;
 import static com.weigandt.Constants.SEARCH.PARAMS.CHAT_HISTORY;
 import static com.weigandt.Constants.SEARCH.PARAMS.CONTEXT;
 import static com.weigandt.Constants.SEARCH.PARAMS.QUESTION;
@@ -32,16 +35,20 @@ import static java.util.Collections.singletonList;
 @Getter
 @RequiredArgsConstructor
 public class GPTQuestionService {
-
-    @Value("${openai.qa.model}")
+    @Value("${openai.qa.model:}")
     private String qaModel;
-    @Value("${openai.qa.threshold.soft}")
+    @Value("${openai.qa.threshold.soft:3000}")
     private long softThresholdMs;
-    @Value("${openai.qa.threshold.hard}")
+    @Value("${openai.qa.threshold.hard:10000}")
     private long hardThresholdMs;
     private final OpenAiService openAiService;
+    private final Environment environment;
 
     public String rephraseQuestion(String question, List<Message> chatHistory, String botUserId) {
+        if (useEmbeddingsDisabled()) {
+            log.warn(FEATURE_NOT_ENABLED_MSG);
+            return null;
+        }
         ChatCompletionRequest request = ChatCompletionRequest.builder()
                 .model(getQaModel())
                 .temperature(.0)
@@ -54,6 +61,10 @@ public class GPTQuestionService {
             log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return "There is no answer to your question";
+    }
+
+    private boolean useEmbeddingsDisabled() {
+        return !ArrayUtils.contains(environment.getActiveProfiles(), "use-embeddings");
     }
 
     public String ask(String question) {
@@ -90,6 +101,10 @@ public class GPTQuestionService {
     }
 
     public String askWithExtras(String question, List<String> extras) {
+        if (useEmbeddingsDisabled()) {
+            log.warn(FEATURE_NOT_ENABLED_MSG);
+            return null;
+        }
         ChatCompletionRequest request = ChatCompletionRequest.builder()
                 .model(getQaModel())
                 .temperature(.0)
@@ -100,6 +115,10 @@ public class GPTQuestionService {
     }
 
     public Flowable<ChatCompletionChunk> askWithExtrasStream(String question, List<String> extras) {
+        if (useEmbeddingsDisabled()) {
+            log.warn(FEATURE_NOT_ENABLED_MSG);
+            return Flowable.empty();
+        }
         ChatCompletionRequest request = ChatCompletionRequest.builder()
                 .model(getQaModel())
                 .temperature(.0)

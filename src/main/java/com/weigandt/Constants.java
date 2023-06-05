@@ -20,6 +20,7 @@ public class Constants {
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class OPENAI {
+        public static final String FEATURE_NOT_ENABLED_MSG = "Feature not enabled, pls check your profiles";
         public static final String VARIOUS_TEXT = "variousText";
         public static final String ERROR_ANSWERING_QUESTION = "Error answering question: {}";
     }

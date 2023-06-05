@@ -5,7 +5,6 @@ import com.slack.api.bolt.context.builtin.EventContext;
 import com.slack.api.bolt.handler.BoltEventHandler;
 import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
-import com.slack.api.model.event.MessageChangedEvent;
 import com.slack.api.model.event.MessageEvent;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.EventDto;

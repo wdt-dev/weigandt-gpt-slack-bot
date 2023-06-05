@@ -4,12 +4,14 @@ import com.weigandt.extras.pdf.PdfFileProcessorService;
 import com.weigandt.extras.text.TextProcessorService;
 import com.weigandt.openai.EmbeddingsService;
 import com.weigandt.pdfconverter.FileService;
+import com.weigandt.pdfconverter.impl.DefaultFileService;
 import com.weigandt.pdfconverter.dto.ChunkWithEmbedding;
 import com.weigandt.pdfconverter.dto.VectorData;
 import com.weigandt.pinecone.VectorCreateService;
 import com.weigandt.pinecone.VectorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,7 @@ import java.util.List;
 
 @Controller("/data/import")
 @Slf4j
+@Profile("create-embeddings")
 public class ExtrasImportController {
 
     @Resource

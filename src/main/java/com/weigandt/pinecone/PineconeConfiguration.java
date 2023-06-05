@@ -8,18 +8,20 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Getter
+@Profile({"use-embeddings", "create-embeddings"})
 public class PineconeConfiguration {
 
-    @Value("${pinecone.apikey}")
+    @Value("${pinecone.apikey:}")
     private String apiKey;
-    @Value("${pinecone.environment}")
+    @Value("${pinecone.environment:}")
     private String env;
-    @Value("${pinecone.project.name}")
+    @Value("${pinecone.project.name:}")
     private String projectName;
-    @Value("${pinecone.index.name}")
+    @Value("${pinecone.index.name:}")
     private String indexName;
 
     @Bean

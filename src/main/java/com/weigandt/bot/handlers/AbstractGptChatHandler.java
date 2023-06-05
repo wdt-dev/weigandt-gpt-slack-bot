@@ -71,7 +71,7 @@ public abstract class AbstractGptChatHandler {
 
         var processor = new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService,
                 contextDto, channelInfo, dto);
-        Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerStreaming(question, messages, contextDto.botUserId());
+        Flowable<ChatCompletionChunk> answerStream = answerService.getExtrasAnswerWithStreaming(question, messages, contextDto.botUserId());
         answerStream.doOnError(processor::processException).subscribe(processor::processChunks);
     }
 
