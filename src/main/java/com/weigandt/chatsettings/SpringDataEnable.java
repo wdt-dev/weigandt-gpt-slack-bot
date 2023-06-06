@@ -8,8 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+@Profile("tokens-restriction")
 @Configuration
 @EnableAutoConfiguration
-@Profile("tokens-restriction")
 public class SpringDataEnable {
 }

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -35,6 +37,10 @@ public class DefaultAnswerService implements AnswerService {
 
         //  3 - get vectors with data
         SingleQueryResults vectorsResult = vectorSearchService.search(questionEmbedding);
+        if (isNull(vectorsResult)) {
+            log.warn("Some troubles during search");
+            return Flowable.empty();
+        }
         List<String> textBlocksFromVectorStorage = vectorSearchService.getTextBlocks(vectorsResult);
 
         //  4 - ask GPT-4 for answer with data from vectors
