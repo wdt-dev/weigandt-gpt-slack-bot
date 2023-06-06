@@ -4,7 +4,6 @@ import com.weigandt.extras.pdf.PdfFileProcessorService;
 import com.weigandt.extras.text.TextProcessorService;
 import com.weigandt.openai.EmbeddingsService;
 import com.weigandt.pdfconverter.FileService;
-import com.weigandt.pdfconverter.impl.DefaultFileService;
 import com.weigandt.pdfconverter.dto.ChunkWithEmbedding;
 import com.weigandt.pdfconverter.dto.VectorData;
 import com.weigandt.pinecone.VectorCreateService;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,7 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-@Controller("/data/import")
+@Controller
+@RequestMapping("/data/import")
 @Slf4j
 @Profile("create-embeddings")
 public class ExtrasImportController {
@@ -59,9 +60,9 @@ public class ExtrasImportController {
             String text = pdfFileProcessorService.getContent(tmpFile);
             List<String> chunks = textProcessorService.splitToChunks(text);
             List<ChunkWithEmbedding> chunksWithEmbeddings = embeddingsService.createEmbeddingsForText(chunks);
-            List<VectorData> vectorData = vectorService.toVectorsData(tmpFile.getName(),chunksWithEmbeddings);
+            List<VectorData> vectorData = vectorService.toVectorsData(tmpFile.getName(), chunksWithEmbeddings);
             vectorData.forEach(data -> vectorCreateService.upsertVectors(data.getVectors()));
-            return ResponseEntity.ok("File imported successfully");
+            return ResponseEntity.ok(String.format("File %s imported successfully", file.getName()));
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.internalServerError().body("Something went wrong, try again later");
