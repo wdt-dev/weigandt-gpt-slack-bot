@@ -23,7 +23,7 @@ public class DefaultVectorCreateService implements VectorCreateService {
     private final PineconeConnection pineconeConnection;
 
     @Value("${pinecone.namespace:}")
-    private final String namespace;
+    private String namespace;
 
     @Override
     public UpsertResponse upsertVectors(List<Vector> vectors) {
