@@ -14,7 +14,7 @@ public interface AnswerService {
 
     String getDefaultGptAnswer(String question);
 
-    Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question);
+    Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question, List<Message> history, String botUserId);
 
     long getSoftThresholdMs();
 

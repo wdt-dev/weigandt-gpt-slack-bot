@@ -69,5 +69,13 @@ public class Constants {
                 Follow Up Input: {question}
                 Standalone question:""";
 
+        public static final String QA_WITH_HISTORY_PROMPT = """
+                Given the following conversation and a new question, please answer to last question of user:
+
+                Chat History:
+                {chat_history}
+                User: {question}
+                """;
+
     }
 }
