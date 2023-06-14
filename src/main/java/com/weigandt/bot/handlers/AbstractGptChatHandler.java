@@ -62,7 +62,7 @@ public abstract class AbstractGptChatHandler {
         GPTCompletionStreamProcessor processor =
                 new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, tokenUsageService,
                         contextDto, channelInfo, dto);
-        Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerWithStreaming(question, history, contextDto.botUserId());
+        Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerAsync(question, history, contextDto.botUserId());
         answerStream.doOnError(processor::processException).subscribe(processor::processChunks);
     }
 
@@ -110,7 +110,7 @@ public abstract class AbstractGptChatHandler {
 
         var processor = new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, tokenUsageService,
                 contextDto, channelInfo, dto);
-        Flowable<ChatCompletionChunk> answerStream = answerService.getExtrasAnswerWithStreaming(question, messages, contextDto.botUserId());
+        Flowable<ChatCompletionChunk> answerStream = answerService.getExtrasAnswerAsync(question, messages, contextDto.botUserId());
         answerStream.doOnError(processor::processException).subscribe(processor::processChunks);
     }
 

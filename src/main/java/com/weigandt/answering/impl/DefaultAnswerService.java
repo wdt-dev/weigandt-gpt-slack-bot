@@ -24,9 +24,9 @@ public class DefaultAnswerService implements AnswerService {
     private final VectorSearchService vectorSearchService;
 
     @Override
-    public Flowable<ChatCompletionChunk> getExtrasAnswerWithStreaming(String question,
-                                                                      List<Message> chatHistory,
-                                                                      String botUserId) {
+    public Flowable<ChatCompletionChunk> getExtrasAnswerAsync(String question,
+                                                              List<Message> chatHistory,
+                                                              String botUserId) {
         // 1 - reformat question (with chat history)
         String rephrasedQuestion = gptQuestionService.rephraseQuestion(question, chatHistory, botUserId);
 
@@ -38,7 +38,7 @@ public class DefaultAnswerService implements AnswerService {
         List<String> textBlocksFromVectorStorage = vectorSearchService.getTextBlocks(vectorsResult);
 
         //  4 - ask GPT-4 for answer with data from vectors
-        return gptQuestionService.askWithExtrasStream(rephrasedQuestion, textBlocksFromVectorStorage);
+        return gptQuestionService.askWithExtrasAsync(rephrasedQuestion, textBlocksFromVectorStorage);
     }
 
     @Override
@@ -47,8 +47,8 @@ public class DefaultAnswerService implements AnswerService {
     }
 
     @Override
-    public Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question, List<Message> history, String botUserId) {
-        return gptQuestionService.askWithStreaming(question, history, botUserId);
+    public Flowable<ChatCompletionChunk> getAnswerAsync(String question, List<Message> history, String botUserId) {
+        return gptQuestionService.askAsync(question, history, botUserId);
     }
 
     @Override
