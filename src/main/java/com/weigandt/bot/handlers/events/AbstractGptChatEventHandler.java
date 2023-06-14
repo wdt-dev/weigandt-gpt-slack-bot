@@ -5,7 +5,7 @@ import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.ContextDto;
-import com.weigandt.bot.EventDto;
+import com.weigandt.bot.QuestionDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.bot.handlers.AbstractGptChatHandler;
 import com.weigandt.chatsettings.service.TokenUsageService;
@@ -21,7 +21,7 @@ public abstract class AbstractGptChatEventHandler extends AbstractGptChatHandler
         super(answerService, slackSupportService, chatHistoryLogService, tokenUsageService);
     }
 
-    public Response makeChatGptGreatAgain(EventContext ctx, EventDto dto)
+    public Response makeChatGptGreatAgain(EventContext ctx, QuestionDto dto)
             throws SlackApiException, IOException {
         ContextDto contextDto = buildContext(ctx);
         super.makeChatGptGreatAgain(contextDto, dto);

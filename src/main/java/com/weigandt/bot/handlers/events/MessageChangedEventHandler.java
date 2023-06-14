@@ -7,7 +7,7 @@ import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.event.MessageChangedEvent;
 import com.weigandt.answering.AnswerService;
-import com.weigandt.bot.EventDto;
+import com.weigandt.bot.QuestionDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
@@ -42,8 +42,10 @@ public class MessageChangedEventHandler extends AbstractGptChatEventHandler impl
             log.debug("Message content equals, no actions needed");
             return ctx.ack();
         }
+        boolean isExtras = getSlackSupportService().isExtrasRequest(event.getMessage().getText());
+
         String prefix = "Your msg was changed, new answer:";
-        EventDto dto = new EventDto(event, prefix);
+        QuestionDto dto = new QuestionDto(event, prefix, isExtras);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }

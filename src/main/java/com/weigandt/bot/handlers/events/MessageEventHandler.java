@@ -7,7 +7,7 @@ import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.model.event.MessageEvent;
 import com.weigandt.answering.AnswerService;
-import com.weigandt.bot.EventDto;
+import com.weigandt.bot.QuestionDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
@@ -33,8 +33,9 @@ public class MessageEventHandler extends AbstractGptChatEventHandler implements 
         MessageEvent event = payload.getEvent();
         Logger logger = ctx.logger;
         logger.debug("MessageEventHandler content:{}", event);
+        boolean isExtras = getSlackSupportService().isExtrasRequest(event.getText());
 
-        EventDto dto = new EventDto(event, EMPTY);
+        QuestionDto dto = new QuestionDto(event, EMPTY, isExtras);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }
