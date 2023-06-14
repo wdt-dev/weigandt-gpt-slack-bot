@@ -42,9 +42,13 @@ file:
     chunk:
       size: 30
     overlap: 10
+
 chat:
   history:
+    limit: 6
     base:
       path: ./logs
     max:
       size: 5Mb
+  extras:
+    prefix: "with extras:"
