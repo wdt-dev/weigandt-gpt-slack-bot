@@ -8,12 +8,11 @@ import io.pinecone.proto.Vector;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-
-import static com.weigandt.Constants.OPENAI.VARIOUS_TEXT;
 
 @Service
 @Slf4j
@@ -23,9 +22,12 @@ import static com.weigandt.Constants.OPENAI.VARIOUS_TEXT;
 public class DefaultVectorCreateService implements VectorCreateService {
     private final PineconeConnection pineconeConnection;
 
+    @Value("${pinecone.namespace:}")
+    private String namespace;
+
     @Override
     public UpsertResponse upsertVectors(List<Vector> vectors) {
-        return upsertVectors(VARIOUS_TEXT, vectors);
+        return upsertVectors(namespace, vectors);
     }
 
     @Override
@@ -34,7 +36,12 @@ public class DefaultVectorCreateService implements VectorCreateService {
                 .addAllVectors(vectors)
                 .setNamespace(namespace)
                 .build();
-
-        return pineconeConnection.getBlockingStub().upsert(upsertRequest);
+        // TODO: test with big files (maybe use asyncStub instead of blockingStub)
+        try {
+            return pineconeConnection.getBlockingStub().upsert(upsertRequest);
+        } catch (Exception e) {
+            log.warn("Pinecone connection issues while creating embeddings", e);
+        }
+        return null;
     }
 }
