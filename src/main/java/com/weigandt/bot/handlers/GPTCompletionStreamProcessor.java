@@ -9,9 +9,8 @@ import com.slack.api.model.Conversation;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
 import com.theokanning.openai.completion.chat.ChatMessage;
-import com.weigandt.bot.CommandDto;
 import com.weigandt.bot.ContextDto;
-import com.weigandt.bot.EventDto;
+import com.weigandt.bot.QuestionDto;
 import com.weigandt.bot.SlackSupportService;
 import com.weigandt.chatsettings.dto.TokenUsageDto;
 import com.weigandt.chatsettings.service.TokenUsageService;
@@ -19,7 +18,6 @@ import com.weigandt.history.ChatHistoryLogService;
 import com.weigandt.history.LogMsgJsonBuilder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -40,7 +38,7 @@ public class GPTCompletionStreamProcessor {
     private final TokenUsageService tokenUsageService;
     private final ContextDto contextDto;
     private final Conversation channelInfo;
-    private final CommandDto dto;
+    private final QuestionDto dto;
     private final StringBuilder sb = new StringBuilder();
     private long startTimeMillis = System.currentTimeMillis();
     private boolean isTypingSent = false;
@@ -51,7 +49,7 @@ public class GPTCompletionStreamProcessor {
         Logger logger = contextDto.logger();
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(channelInfo.getId())
-                .threadTs(getThreadTs())
+                .threadTs(dto.getThreadTs())
                 .token(botToken)
                 .blocks(slackSupportService.wrapInBlock("Bot is typing..."))
         );
@@ -59,11 +57,6 @@ public class GPTCompletionStreamProcessor {
         if (!messageResponse.isOk()) {
             logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
         }
-    }
-
-    @Nullable
-    private String getThreadTs() {
-        return dto instanceof EventDto eventDto ? eventDto.getThreadTs() : null;
     }
 
     public void processChunks(ChatCompletionChunk chatCompletionChunk)
@@ -96,7 +89,7 @@ public class GPTCompletionStreamProcessor {
             String respText = String.format("<@%s> %s %s", dto.getUser(), dto.getAnswerPrefix(), sb);
             RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
                     .channel(channelInfo.getId())
-                    .threadTs(getThreadTs())
+                    .threadTs(dto.getThreadTs())
                     .token(botToken)
                     .blocks(slackSupportService.wrapInBlock(respText));
             ChatPostMessageResponse messageResponse = client.chatPostMessage(postMsgConfigurator);
@@ -135,7 +128,7 @@ public class GPTCompletionStreamProcessor {
             String respText = String.format("Don't forget about limits - not more than %s symbols per day. Symbols spent: %s", threshold, tokenUsedTotal);
             RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
                     .channel(channelInfo.getId())
-                    .threadTs(getThreadTs())
+                    .threadTs(dto.getThreadTs())
                     .token(botToken)
                     .blocks(slackSupportService.wrapInBlock(respText));
             ChatPostMessageResponse messageResponse = client.chatPostMessage(postMsgConfigurator);
@@ -153,7 +146,7 @@ public class GPTCompletionStreamProcessor {
         logger.error("Something went wrong asking OpenAI for answer: {}", e.getMessage(), e);
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(channelInfo.getId())
-                .threadTs(getThreadTs())
+                .threadTs(dto.getThreadTs())
                 .token(botToken)
                 .blocks(slackSupportService.wrapInBlock("I tried to answer but I can't, please try again"))
         );
@@ -168,7 +161,7 @@ public class GPTCompletionStreamProcessor {
         Logger logger = contextDto.logger();
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(channelInfo.getId())
-                .threadTs(getThreadTs())
+                .threadTs(dto.getThreadTs())
                 .token(botToken)
                 .blocks(slackSupportService.wrapInBlock("The answer is huge, please wait"))
         );
