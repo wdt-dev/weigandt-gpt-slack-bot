@@ -57,10 +57,12 @@ public abstract class AbstractGptChatHandler {
 
         String question = slackSupportService.cleanupMessage(dto.getInputText());
         dto.setQuestion(question);
+        List<Message> history = slackSupportService.getMsgHistory(contextDto.channelId(), contextDto);
+
         GPTCompletionStreamProcessor processor =
                 new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, tokenUsageService,
                         contextDto, channelInfo, dto);
-        Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerWithStreaming(question);
+        Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerWithStreaming(question, history, contextDto.botUserId());
         answerStream.doOnError(processor::processException).subscribe(processor::processChunks);
     }
 

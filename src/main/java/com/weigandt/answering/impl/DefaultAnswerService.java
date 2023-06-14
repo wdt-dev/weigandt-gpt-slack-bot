@@ -47,8 +47,8 @@ public class DefaultAnswerService implements AnswerService {
     }
 
     @Override
-    public Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question) {
-        return gptQuestionService.askWithStreaming(question);
+    public Flowable<ChatCompletionChunk> getAnswerWithStreaming(String question, List<Message> history, String botUserId) {
+        return gptQuestionService.askWithStreaming(question, history, botUserId);
     }
 
     @Override
