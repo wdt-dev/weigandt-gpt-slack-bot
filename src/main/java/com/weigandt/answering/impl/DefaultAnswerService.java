@@ -42,7 +42,7 @@ public class DefaultAnswerService implements AnswerService {
     }
 
     @Override
-    public String getDefaultGptAnswer(String question) {
+    public String getAnswer(String question) {
         return gptQuestionService.ask(question);
     }
 

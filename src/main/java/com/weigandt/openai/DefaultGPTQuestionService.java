@@ -54,7 +54,7 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
         ChatCompletionRequest request = ChatCompletionRequest.builder()
                 .model(getQaModel())
                 .temperature(.0)
-                .messages(prepareQuestion(question, chatHistory, botUserId))
+                .messages(prepareQuestion(question, chatHistory, botUserId, REPHRASE_PROMPT))
                 .build();
         try {
             ChatCompletionResult completion = openAiService.createChatCompletion(request);
@@ -147,10 +147,6 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
 
     private boolean useEmbeddingsDisabled() {
         return !ArrayUtils.contains(environment.getActiveProfiles(), "use-embeddings");
-    }
-
-    private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory, String botUserId) {
-        return prepareQuestion(question, chatHistory, botUserId, REPHRASE_PROMPT);
     }
 
     private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory, String botUserId, String template) {
