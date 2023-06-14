@@ -15,12 +15,6 @@
                 "url": "https://_your_domain_name_here:3000/slack/events",
                 "description": "Get greeting from bot",
                 "should_escape": false
-            },
-            {
-                "command": "/extras",
-                "url": "https://_your_domain_name_here:3000/slack/events",
-                "description": "This allows you to use advanced GPT responses",
-                "should_escape": false
             }
         ]
     },
