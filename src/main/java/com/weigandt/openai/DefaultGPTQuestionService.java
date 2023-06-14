@@ -65,10 +65,6 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
         return "There is no answer to your question";
     }
 
-    private boolean useEmbeddingsDisabled() {
-        return !ArrayUtils.contains(environment.getActiveProfiles(), "use-embeddings");
-    }
-
     @Override
     public String ask(String question) {
         if (StringUtils.isBlank(question)) {
@@ -90,8 +86,8 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
     }
 
     @Override
-    public Flowable<ChatCompletionChunk> askWithStreaming(String question, List<Message> chatHistory,
-                                                          String botUserId) {
+    public Flowable<ChatCompletionChunk> askAsync(String question, List<Message> chatHistory,
+                                                  String botUserId) {
         ChatCompletionRequest request = ChatCompletionRequest.builder()
                 .model(getQaModel())
                 .temperature(.0)
@@ -121,7 +117,7 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
     }
 
     @Override
-    public Flowable<ChatCompletionChunk> askWithExtrasStream(String question, List<String> extras) {
+    public Flowable<ChatCompletionChunk> askWithExtrasAsync(String question, List<String> extras) {
         if (useEmbeddingsDisabled()) {
             log.warn(FEATURE_NOT_ENABLED_MSG);
             return Flowable.empty();
@@ -137,6 +133,20 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
             log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return Flowable.empty();
+    }
+
+    @Override
+    public long getSoftThresholdMs() {
+        return softThresholdMs;
+    }
+
+    @Override
+    public long getHardThresholdMs() {
+        return hardThresholdMs;
+    }
+
+    private boolean useEmbeddingsDisabled() {
+        return !ArrayUtils.contains(environment.getActiveProfiles(), "use-embeddings");
     }
 
     private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory, String botUserId) {
@@ -173,15 +183,5 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
         String msg = QA_PROMPT.replace(QUESTION, question)
                 .replace(CONTEXT, context);
         return singletonList(createUserChatMessage(msg));
-    }
-
-    @Override
-    public long getSoftThresholdMs() {
-        return softThresholdMs;
-    }
-
-    @Override
-    public long getHardThresholdMs() {
-        return hardThresholdMs;
     }
 }

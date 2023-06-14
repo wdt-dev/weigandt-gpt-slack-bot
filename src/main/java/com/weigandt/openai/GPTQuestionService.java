@@ -12,12 +12,12 @@ public interface GPTQuestionService {
 
     String ask(String question);
 
-    Flowable<ChatCompletionChunk> askWithStreaming(String question, List<Message> chatHistory,
-                                                   String botUserId);
+    Flowable<ChatCompletionChunk> askAsync(String question, List<Message> chatHistory,
+                                           String botUserId);
 
     String askWithExtras(String question, List<String> extras);
 
-    Flowable<ChatCompletionChunk> askWithExtrasStream(String question, List<String> extras);
+    Flowable<ChatCompletionChunk> askWithExtrasAsync(String question, List<String> extras);
 
     long getSoftThresholdMs();
 
