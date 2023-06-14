@@ -12,7 +12,7 @@ public interface AnswerService {
                                                               List<Message> chatHistory,
                                                               String botUserId);
 
-    String getDefaultGptAnswer(String question);
+    String getAnswer(String question);
 
     Flowable<ChatCompletionChunk> getAnswerAsync(String question, List<Message> history, String botUserId);
 

@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.weigandt.Constants.SLACK_BOT.CHAT_POST_MESSAGE_FAILED;
@@ -57,8 +58,8 @@ public abstract class AbstractGptChatHandler {
 
         String question = slackSupportService.cleanupMessage(dto.getInputText());
         dto.setQuestion(question);
-        List<Message> history = slackSupportService.getMsgHistory(contextDto.channelId(), contextDto);
-
+        //List<Message> history = slackSupportService.getMsgHistory(contextDto.channelId(), contextDto);
+        List<Message> history = Collections.emptyList(); // TODO: uncommit the below line when the feature will be ready
         GPTCompletionStreamProcessor processor =
                 new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, tokenUsageService,
                         contextDto, channelInfo, dto);
