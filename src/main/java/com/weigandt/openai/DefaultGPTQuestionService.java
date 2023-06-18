@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -149,7 +150,12 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
         return !ArrayUtils.contains(environment.getActiveProfiles(), "use-embeddings");
     }
 
-    private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory, String botUserId, String template) {
+    private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory,
+                                              String botUserId,
+                                              String template) {
+        if (CollectionUtils.isEmpty(chatHistory)) {
+            return singletonList(createUserChatMessage(question));
+        }
         String transformedChatHistory = chatHistory.stream()
                 .sorted(Comparator.comparing(Message::getTs))
                 .map(msg -> transformMessage(msg, botUserId))
@@ -157,12 +163,14 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
 
         String msg = template.replace(QUESTION, question)
                 .replace(CHAT_HISTORY, transformedChatHistory);
+        log.info("Full Question: \n{}", msg);
         return singletonList(createUserChatMessage(msg));
     }
 
     private String transformMessage(Message message, String botUserId) {
-        return (StringUtils.equals(botUserId, message.getUser()) ? "Bot" : "User") +
-                ": " + message.getText();
+        return (StringUtils.equals(botUserId, message.getUser()) ?
+                ChatMessageRole.ASSISTANT.value() :
+                ChatMessageRole.USER.value()) + ": " + message.getText();
     }
 
     private String getFirstMessage(ChatCompletionResult completion) {

@@ -45,7 +45,7 @@ file:
 
 chat:
   history:
-    limit: 6
+    limit: 10
     base:
       path: ./logs
     max:
