@@ -25,6 +25,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.weigandt.Constants.SEARCH.BOT_IS_TYPING;
+import static com.weigandt.Constants.SEARCH.CANT_ANSWER_MSG;
+import static com.weigandt.Constants.SEARCH.LIMITS_MSG;
+import static com.weigandt.Constants.SEARCH.THE_ANSWER_IS_HUGE_MSG;
 import static com.weigandt.Constants.SLACK_BOT.CHANNEL;
 import static com.weigandt.Constants.SLACK_BOT.CHAT_POST_MESSAGE_FAILED;
 import static com.weigandt.Constants.SLACK_BOT.IM;
@@ -51,7 +55,7 @@ public class GPTCompletionStreamProcessor {
                 .channel(channelInfo.getId())
                 .threadTs(dto.getThreadTs())
                 .token(botToken)
-                .blocks(slackSupportService.wrapInBlock("Bot is typing..."))
+                .blocks(slackSupportService.wrapInBlock(BOT_IS_TYPING))
         );
 
         if (!messageResponse.isOk()) {
@@ -125,7 +129,7 @@ public class GPTCompletionStreamProcessor {
         if (tokenUsageService.isSoftThresholdExceeded(userName)) {
             Integer tokenUsedTotal = tokenUsageService.getTodayStatistics(userName).get().getTokenUsedTotal();
             Integer threshold = tokenUsageService.getUserTokenRestriction(userName).hardThreshold();
-            String respText = String.format("Don't forget about limits - not more than %s symbols per day. Symbols spent: %s", threshold, tokenUsedTotal);
+            String respText = String.format(LIMITS_MSG + " - not more than %s symbols per day. Symbols spent: %s", threshold, tokenUsedTotal);
             RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
                     .channel(channelInfo.getId())
                     .threadTs(dto.getThreadTs())
@@ -148,7 +152,7 @@ public class GPTCompletionStreamProcessor {
                 .channel(channelInfo.getId())
                 .threadTs(dto.getThreadTs())
                 .token(botToken)
-                .blocks(slackSupportService.wrapInBlock("I tried to answer but I can't, please try again"))
+                .blocks(slackSupportService.wrapInBlock(CANT_ANSWER_MSG))
         );
         if (!messageResponse.isOk()) {
             logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
@@ -163,7 +167,7 @@ public class GPTCompletionStreamProcessor {
                 .channel(channelInfo.getId())
                 .threadTs(dto.getThreadTs())
                 .token(botToken)
-                .blocks(slackSupportService.wrapInBlock("The answer is huge, please wait"))
+                .blocks(slackSupportService.wrapInBlock(THE_ANSWER_IS_HUGE_MSG))
         );
 
         if (!messageResponse.isOk()) {
