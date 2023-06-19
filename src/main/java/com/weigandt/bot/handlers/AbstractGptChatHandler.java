@@ -52,7 +52,7 @@ public abstract class AbstractGptChatHandler {
 
         String question = cleanupQuestion(dto);
         dto.setQuestion(question);
-        List<Message> history = slackSupportService.getMsgHistory(contextDto.channelId(), contextDto);
+        List<Message> history = slackSupportService.getMsgHistory(dto, contextDto);
         GPTCompletionStreamProcessor processor =
                 new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, tokenUsageService,
                         contextDto, channelInfo, dto);

@@ -70,12 +70,16 @@ public class Constants {
                 Standalone question:""";
 
         public static final String QA_WITH_HISTORY_PROMPT = """
-                Given the following conversation and a new question, please answer to last question of user:
+                Given the following conversation of user and assistant, and a new question, please answer to the new question of user:
 
                 Chat History:
                 {chat_history}
-                User: {question}
+                New question: {question}
                 """;
-
+        public static final String LIMITS_MSG = "Don't forget about limits:";
+        public static final String BOT_IS_TYPING = "Bot is typing...";
+        public static final String THE_ANSWER_IS_HUGE_MSG = "The answer is huge, please wait";
+        public static final String CANT_ANSWER_MSG = "I tried to answer but I can't, please try again";
+        public static final String HAS_JOINED_MSG = "has joined the channel";
     }
 }
