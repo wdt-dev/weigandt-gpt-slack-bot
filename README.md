@@ -2,7 +2,6 @@
 
 ## Features
 - Works with GPT 3.5-turbo API by default, but you can use GPT 4 API if you have access to
-- Can answer using general GPT data, or you can configure Pinecone + 
 - Most things are configurable by .env file parameters
 - Docker compose boxed solution (simple start)
 
@@ -12,7 +11,7 @@
     git clone git@github.com:wdt-dev/weigandt-gpt-slack-bot.git
     ```
 - Create an application in Slack to serve by this App (take a look at [app_manifest_example.json](app_manifest_example.json) as an example), don't forget to provide proper links to the domain you're using
-- Provide .env file properties (access keys to SLACK app, OPENAI, PINECONE, etc.), take a look at [sample.env](sample.env) for the list of properties
+- Provide .env file properties (access keys to SLACK app, OPENAI, DB, etc.), take a look at [sample.env](sample.env) for the list of properties
 - Run 
     ```
     docker compose up -d
