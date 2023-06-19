@@ -54,8 +54,6 @@ public class SlackSupportService {
     private final Map<String, Conversation> channelsCache = new ConcurrentHashMap<>();
     private final List<String> trashSymbols = Arrays.asList("@", "<", ">");
     private final List<String> trashMsgs = Arrays.asList(LIMITS_MSG, BOT_IS_TYPING, THE_ANSWER_IS_HUGE_MSG, HAS_JOINED_MSG);
-    @Value("${chat.extras.prefix:with extras}")
-    private String extrasPrefix;
     @Value("${chat.history.limit:10}")
     private Integer historyLimit;
 
@@ -120,24 +118,12 @@ public class SlackSupportService {
         return input;
     }
 
-    public String cleanupExtrasMessage(String input) {
-        String result = input;
-        if (input.contains(extrasPrefix)) {
-            result = result.replace(extrasPrefix, "");
-        }
-        return cleanupMessage(result);
-    }
-
     public List<LayoutBlock> wrapInBlock(String respText) {
         return Collections.singletonList(SectionBlock.builder()
                 .text(MarkdownTextObject.builder()
                         .text(respText)
                         .build())
                 .build());
-    }
-
-    public boolean isExtrasRequest(String question) {
-        return StringUtils.contains(question, extrasPrefix);
     }
 
     public boolean isHardThresholdExceeded(ContextDto contextDto, QuestionDto dto, Logger logger, Conversation channelInfo) throws SlackApiException, IOException {

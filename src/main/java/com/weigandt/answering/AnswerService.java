@@ -8,12 +8,6 @@ import java.util.List;
 
 public interface AnswerService {
 
-    public Flowable<ChatCompletionChunk> getExtrasAnswerAsync(String question,
-                                                              List<Message> chatHistory,
-                                                              String botUserId);
-
-    String getAnswer(String question);
-
     Flowable<ChatCompletionChunk> getAnswerAsync(String question, List<Message> history, String botUserId);
 
     long getSoftThresholdMs();

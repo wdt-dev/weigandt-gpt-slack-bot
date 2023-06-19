@@ -50,24 +50,14 @@ public abstract class AbstractGptChatHandler {
             return;
         }
 
-        String question = cleanupQuestion(dto);
+        String question = slackSupportService.cleanupMessage(dto.getRawInputText());
         dto.setQuestion(question);
         List<Message> history = slackSupportService.getMsgHistory(dto, contextDto);
         GPTCompletionStreamProcessor processor =
                 new GPTCompletionStreamProcessor(slackSupportService, chatHistoryLogService, tokenUsageService,
                         contextDto, channelInfo, dto);
-        Flowable<ChatCompletionChunk> answerStream = getAnswer(dto, botUserId, question, history);
+        Flowable<ChatCompletionChunk> answerStream = answerService.getAnswerAsync(question, history, botUserId);
         answerStream.doOnError(processor::processException).subscribe(processor::processChunks);
-    }
-
-    private Flowable<ChatCompletionChunk> getAnswer(QuestionDto dto, String botUserId, String question, List<Message> history) {
-        return dto.isExtrasQuestion() ?
-                answerService.getExtrasAnswerAsync(question, history, botUserId) :
-                answerService.getAnswerAsync(question, history, botUserId);
-    }
-
-    private String cleanupQuestion(QuestionDto dto) {
-        return dto.isExtrasQuestion() ? slackSupportService.cleanupExtrasMessage(dto.getRawInputText()) : slackSupportService.cleanupMessage(dto.getRawInputText());
     }
 
     protected ContextDto buildContext(Context ctx) {

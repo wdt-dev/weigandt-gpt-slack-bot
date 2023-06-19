@@ -33,9 +33,8 @@ public class MessageEventHandler extends AbstractGptChatEventHandler implements 
         MessageEvent event = payload.getEvent();
         Logger logger = ctx.logger;
         logger.debug("MessageEventHandler content:{}", event);
-        boolean isExtras = getSlackSupportService().isExtrasRequest(event.getText());
 
-        QuestionDto dto = new QuestionDto(event, EMPTY, isExtras);
+        QuestionDto dto = new QuestionDto(event, EMPTY);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }
