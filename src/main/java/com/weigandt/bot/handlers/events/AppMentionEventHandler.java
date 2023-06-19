@@ -35,8 +35,7 @@ public class AppMentionEventHandler extends AbstractGptChatEventHandler implemen
         AppMentionEvent event = payload.getEvent();
         Logger logger = ctx.logger;
         logger.debug("AppMentionEventHandler content:{}", event);
-        boolean isExtras = getSlackSupportService().isExtrasRequest(event.getText());
-        QuestionDto dto = new QuestionDto(event, EMPTY, isExtras);
+        QuestionDto dto = new QuestionDto(event, EMPTY);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }

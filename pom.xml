@@ -24,7 +24,6 @@
         <slack.bolt.servlet.version>1.29.2</slack.bolt.servlet.version>
         <slf4j.simple.version>2.0.5</slf4j.simple.version>
         <java.servlet.api.version>4.0.1</java.servlet.api.version>
-        <okhttp.version>4.8.1</okhttp.version>
         <lombok.version>1.18.26</lombok.version>
         <mysql.connector.version>8.0.33</mysql.connector.version>
     </properties>
@@ -49,11 +48,6 @@
             <version>${slack.bolt.servlet.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>2.0.27</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
@@ -67,11 +61,6 @@
             <groupId>com.theokanning.openai-gpt3-java</groupId>
             <artifactId>api</artifactId>
             <version>0.12.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.pinecone</groupId>
-            <artifactId>pinecone-client</artifactId>
-            <version>0.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
