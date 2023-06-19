@@ -80,5 +80,6 @@ public class Constants {
         public static final String BOT_IS_TYPING = "Bot is typing...";
         public static final String THE_ANSWER_IS_HUGE_MSG = "The answer is huge, please wait";
         public static final String CANT_ANSWER_MSG = "I tried to answer but I can't, please try again";
+        public static final String HAS_JOINED_MSG = "has joined the channel";
     }
 }

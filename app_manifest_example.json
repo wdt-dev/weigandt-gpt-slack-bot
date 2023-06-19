@@ -1,6 +1,6 @@
 {
     "display_information": {
-        "name": "gptslackbot",
+        "name": "gpttestslackbot",
         "description": "This is GPT powered Java bot",
         "background_color": "#0d3ed4"
     },
@@ -12,7 +12,7 @@
         "slash_commands": [
             {
                 "command": "/hello",
-                "url": "https://_your_domain_name_here:3000/slack/events",
+                "url": "https://cb12-141-136-91-23.ngrok-free.app/slack/events",
                 "description": "Get greeting from bot",
                 "should_escape": false
             }
@@ -28,19 +28,22 @@
                 "chat:write",
                 "chat:write.public",
                 "commands",
-                "im:history",
                 "im:write",
                 "users:read",
                 "channels:read",
                 "groups:read",
                 "mpim:read",
-                "im:read"
+                "im:read",
+                "im:history",
+                "groups:history",
+                "mpim:history",
+                "channels:history"
             ]
         }
     },
     "settings": {
         "event_subscriptions": {
-            "request_url": "https://_your_domain_name_here:3000/slack/events",
+            "request_url": "https://cb12-141-136-91-23.ngrok-free.app/slack/events",
             "user_events": [
                 "message.app_home",
                 "message.im"
