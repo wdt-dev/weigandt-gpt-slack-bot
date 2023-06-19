@@ -18,7 +18,7 @@ server:
     key-password:
 
 openai:
-  apikey: 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
+  apikey:
   qa:
     model: gpt-3.5-turbo
     threshold:
