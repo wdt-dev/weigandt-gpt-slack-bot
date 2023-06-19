@@ -42,10 +42,9 @@ public class MessageChangedEventHandler extends AbstractGptChatEventHandler impl
             log.debug("Message content equals, no actions needed");
             return ctx.ack();
         }
-        boolean isExtras = getSlackSupportService().isExtrasRequest(event.getMessage().getText());
 
         String prefix = "Your msg was changed, new answer:";
-        QuestionDto dto = new QuestionDto(event, prefix, isExtras);
+        QuestionDto dto = new QuestionDto(event, prefix);
         return makeChatGptGreatAgain(ctx, dto);
     }
 }

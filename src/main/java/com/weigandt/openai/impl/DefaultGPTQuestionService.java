@@ -1,4 +1,4 @@
-package com.weigandt.openai;
+package com.weigandt.openai.impl;
 
 import com.slack.api.model.Message;
 import com.theokanning.openai.completion.chat.ChatCompletionChunk;
@@ -7,6 +7,7 @@ import com.theokanning.openai.completion.chat.ChatCompletionResult;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.completion.chat.ChatMessageRole;
 import com.theokanning.openai.service.OpenAiService;
+import com.weigandt.openai.GPTQuestionService;
 import io.reactivex.Flowable;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
