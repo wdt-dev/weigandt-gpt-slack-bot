@@ -3,7 +3,7 @@ services:
   bot:
     container_name: weigandt-gpt-slack-bot
     build: .
-    restart: always
+    restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
@@ -17,17 +17,10 @@ services:
   mysqldb:
     container_name: mysql-db-settings
     image: mysql:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - '3306:3306'
     env_file:
       - mysql.env
     volumes:
       - /usr/gptslackbot/data:/var/lib/mysql
-#
-#  sqlitedb:
-#    image: nouchka/sqlite3:latest
-#    stdin_open: true
-#    tty: true
-#    volumes:
-#      - /usr/gptslackbot/sdata:/root/db/
