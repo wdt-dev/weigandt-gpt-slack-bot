@@ -1,4 +1,4 @@
-package com.weigandt.bot;
+package com.weigandt.bot.dto;
 
 import com.slack.api.model.event.AppMentionEvent;
 import com.slack.api.model.event.MessageChangedEvent;
