@@ -1,6 +1,6 @@
 package com.weigandt.chatsettings.service.impl;
 
-import com.weigandt.chatsettings.dto.TokenCountSettings;
+import com.weigandt.chatsettings.dto.TokenCountSettingsDto;
 import com.weigandt.chatsettings.dto.TokenUsageDto;
 import com.weigandt.chatsettings.entity.DateAndUser;
 import com.weigandt.chatsettings.entity.TokenUsageStatistic;
@@ -28,17 +28,17 @@ public class DefaultTokenUsageService implements TokenUsageService {
     private final TokenUsageStatisticRepository tokenUsageStatisticRepository;
 
     @Override
-    public TokenCountSettings getUserTokenRestriction(String userName) {
+    public TokenCountSettingsDto getUserTokenRestriction(String userName) {
         Optional<UserSetting> setting = userSettingRepository.findById(userName);
         if (setting.isEmpty()) {
-            return new TokenCountSettings(userName, DEFAULT_SOFT_RESTRICTION, DEFAULT_HARD_RESTRICTION);
+            return new TokenCountSettingsDto(userName, DEFAULT_SOFT_RESTRICTION, DEFAULT_HARD_RESTRICTION);
         }
         return setting.map(this::toDto).get();
     }
 
     @Override
     public boolean isSoftThresholdExceeded(String userName) {
-        TokenCountSettings userTokenRestriction = getUserTokenRestriction(userName);
+        TokenCountSettingsDto userTokenRestriction = getUserTokenRestriction(userName);
         Integer softThreshold = userTokenRestriction.softThreshold();
         Optional<TokenUsageStatistic> todayStatistics = getTodayStatistics(userName);
         return todayStatistics.filter(tus -> tus.getTokenUsedTotal() > softThreshold).isPresent();
@@ -46,7 +46,7 @@ public class DefaultTokenUsageService implements TokenUsageService {
 
     @Override
     public boolean isHardThresholdExceeded(String userName) {
-        TokenCountSettings userTokenRestriction = getUserTokenRestriction(userName);
+        TokenCountSettingsDto userTokenRestriction = getUserTokenRestriction(userName);
         Integer hardThreshold = userTokenRestriction.hardThreshold();
         Optional<TokenUsageStatistic> todayStatistics = getTodayStatistics(userName);
         return todayStatistics.filter(tus -> tus.getTokenUsedTotal() > hardThreshold).isPresent();
@@ -84,8 +84,8 @@ public class DefaultTokenUsageService implements TokenUsageService {
         return usage + Optional.ofNullable(existingUsage).orElse(0);
     }
 
-    private TokenCountSettings toDto(UserSetting model) {
-        return new TokenCountSettings(model.getUserName(),
+    private TokenCountSettingsDto toDto(UserSetting model) {
+        return new TokenCountSettingsDto(model.getUserName(),
                 model.getTokenSoftThreshold(),
                 model.getTokenHardThreshold());
     }
