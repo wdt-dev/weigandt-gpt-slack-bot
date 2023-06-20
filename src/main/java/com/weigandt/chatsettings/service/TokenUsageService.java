@@ -9,8 +9,12 @@ import java.util.Optional;
 public interface TokenUsageService {
 
     TokenCountSettingsDto getUserTokenRestriction(String userName);
+
     boolean isSoftThresholdExceeded(String userName);
+
     boolean isHardThresholdExceeded(String userName);
+
     Optional<TokenUsageStatistic> getTodayStatistics(String userName);
+
     TokenUsageStatistic saveStatistics(TokenUsageDto dto);
 }
