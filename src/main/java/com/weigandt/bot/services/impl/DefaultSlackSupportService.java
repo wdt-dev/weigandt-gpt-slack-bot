@@ -1,4 +1,4 @@
-package com.weigandt.bot;
+package com.weigandt.bot.services.impl;
 
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
@@ -7,6 +7,7 @@ import com.slack.api.methods.request.conversations.ConversationsInfoRequest;
 import com.slack.api.methods.request.conversations.ConversationsRepliesRequest;
 import com.slack.api.methods.request.users.UsersInfoRequest;
 import com.slack.api.methods.response.chat.ChatPostMessageResponse;
+import com.slack.api.methods.response.conversations.ConversationsHistoryResponse;
 import com.slack.api.methods.response.conversations.ConversationsRepliesResponse;
 import com.slack.api.methods.response.users.UsersInfoResponse;
 import com.slack.api.model.Conversation;
@@ -14,6 +15,9 @@ import com.slack.api.model.Message;
 import com.slack.api.model.block.LayoutBlock;
 import com.slack.api.model.block.SectionBlock;
 import com.slack.api.model.block.composition.MarkdownTextObject;
+import com.weigandt.bot.dto.ContextDto;
+import com.weigandt.bot.dto.QuestionDto;
+import com.weigandt.bot.services.SlackSupportService;
 import com.weigandt.chatsettings.service.TokenUsageService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +51,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Getter
 @Slf4j
 @RequiredArgsConstructor
-public class SlackSupportService {
+public class DefaultSlackSupportService implements SlackSupportService {
 
     private static final int ONLY_LAST_THREAD_MSG = 1;
     private final Map<String, String> userIdToUserName = new ConcurrentHashMap<>();
@@ -59,15 +63,9 @@ public class SlackSupportService {
 
     private final TokenUsageService tokenUsageService;
 
+    @Override
     public List<Message> getMsgHistory(QuestionDto dto, ContextDto ctxDto) throws SlackApiException, IOException {
-        var historyRequest = ConversationsHistoryRequest.builder()
-                .channel(ctxDto.channelId())
-                .limit(ONLY_LAST_THREAD_MSG)
-                .token(ctxDto.botToken())
-                .inclusive(true)
-                .includeAllMetadata(true)
-                .build();
-        var history = ctxDto.client().conversationsHistory(historyRequest);
+        var history = getHistory(ctxDto);
         List<Message> messages = history.getMessages();
         if (CollectionUtils.isEmpty(messages)) {
             return Collections.emptyList();
@@ -81,13 +79,7 @@ public class SlackSupportService {
         }
         //thread start msg
         Message threadHeadMsg = threadHeadMsgOpt.get();
-        ConversationsRepliesRequest request = ConversationsRepliesRequest.builder()
-                .token(ctxDto.botToken())
-                .limit(historyLimit)
-                .channel(ctxDto.channelId())
-                .ts(threadHeadMsg.getTs())
-                .build();
-        ConversationsRepliesResponse replies = ctxDto.client().conversationsReplies(request);
+        var replies = getReplies(ctxDto, threadHeadMsg.getTs());
         List<Message> filteredMessages = Stream.concat(Stream.of(threadHeadMsg),
                         emptyIfNull(replies.getMessages()).stream())
                 .filter(this::isNotTechMsg)
@@ -100,10 +92,7 @@ public class SlackSupportService {
         return filteredMessages;
     }
 
-    private boolean isNotTechMsg(Message x) {
-        return trashMsgs.stream().noneMatch(tm -> StringUtils.contains(x.getText(), tm));
-    }
-
+    @Override
     public boolean isCorrectToAnswerMsg(String text, String botUserId, boolean isIm) {
         if (isIm) {
             return isNotBlank(text);
@@ -111,6 +100,7 @@ public class SlackSupportService {
         return StringUtils.contains(text, String.format("<@%s>", botUserId));
     }
 
+    @Override
     public String cleanupMessage(String input) {
         if (trashSymbols.stream().anyMatch(input::contains)) {
             return StringUtils.trim(input.replaceAll("<@.*?>", ""));
@@ -118,6 +108,7 @@ public class SlackSupportService {
         return input;
     }
 
+    @Override
     public List<LayoutBlock> wrapInBlock(String respText) {
         return Collections.singletonList(SectionBlock.builder()
                 .text(MarkdownTextObject.builder()
@@ -126,7 +117,11 @@ public class SlackSupportService {
                 .build());
     }
 
-    public boolean isHardThresholdExceeded(ContextDto contextDto, QuestionDto dto, Logger logger, Conversation channelInfo) throws SlackApiException, IOException {
+    @Override
+    public boolean isHardThresholdExceeded(ContextDto contextDto,
+                                           QuestionDto dto, Logger logger,
+                                           Conversation channelInfo)
+            throws SlackApiException, IOException {
         String botToken = contextDto.botToken();
         MethodsClient client = contextDto.client();
         String userName = this.getCachedUserFullName(dto.getUser(),
@@ -147,6 +142,60 @@ public class SlackSupportService {
         return false;
     }
 
+    @Override
+    public String getCachedUserFullName(String user, MethodsClient client, String botToken) throws SlackApiException, IOException {
+        if (!userIdToUserName.containsKey(user)) {
+            String userFullName = getUserFullName(user, client, botToken);
+            userIdToUserName.put(user, userFullName);
+        }
+        return userIdToUserName.get(user);
+    }
+
+    @Override
+    public Conversation getCachedChannelInfo(ContextDto contextDto) throws SlackApiException, IOException {
+        String channel = contextDto.channelId();
+        MethodsClient client = contextDto.client();
+        String botToken = contextDto.botToken();
+        if (!channelsCache.containsKey(channel)) {
+            Conversation channelInfo = getChannelInfo(client, channel, botToken);
+            if (isNull(channelInfo)) {
+                contextDto.logger().debug("Channel info is empty");
+                return null;
+            }
+            channelsCache.put(channel, channelInfo);
+        }
+        return channelsCache.get(channel);
+    }
+
+
+    private ConversationsHistoryResponse getHistory(ContextDto ctxDto)
+            throws IOException, SlackApiException {
+        var historyRequest = ConversationsHistoryRequest.builder()
+                .channel(ctxDto.channelId())
+                .limit(ONLY_LAST_THREAD_MSG)
+                .token(ctxDto.botToken())
+                .inclusive(true)
+                .includeAllMetadata(true)
+                .build();
+        return ctxDto.client().conversationsHistory(historyRequest);
+    }
+
+    private ConversationsRepliesResponse getReplies(ContextDto ctxDto, String threadMsgTs)
+            throws IOException, SlackApiException {
+        ConversationsRepliesRequest request = ConversationsRepliesRequest.builder()
+                .token(ctxDto.botToken())
+                .limit(historyLimit)
+                .channel(ctxDto.channelId())
+                .ts(threadMsgTs)
+                .build();
+        return ctxDto.client().conversationsReplies(request);
+    }
+
+    private boolean isNotTechMsg(Message x) {
+        return trashMsgs.stream().noneMatch(tm -> StringUtils.contains(x.getText(), tm));
+    }
+
+
     private String getUserFullName(String userId, MethodsClient client, String botToken) throws SlackApiException, IOException {
         UsersInfoRequest request = UsersInfoRequest.builder()
                 .user(userId)
@@ -164,26 +213,4 @@ public class SlackSupportService {
         return client.conversationsInfo(request).getChannel();
     }
 
-    public String getCachedUserFullName(String user, MethodsClient client, String botToken) throws SlackApiException, IOException {
-        if (!userIdToUserName.containsKey(user)) {
-            String userFullName = getUserFullName(user, client, botToken);
-            userIdToUserName.put(user, userFullName);
-        }
-        return userIdToUserName.get(user);
-    }
-
-    public Conversation getCachedChannelInfo(ContextDto contextDto) throws SlackApiException, IOException {
-        String channel = contextDto.channelId();
-        MethodsClient client = contextDto.client();
-        String botToken = contextDto.botToken();
-        if (!channelsCache.containsKey(channel)) {
-            Conversation channelInfo = getChannelInfo(client, channel, botToken);
-            if (isNull(channelInfo)) {
-                contextDto.logger().debug("Channel info is empty");
-                return null;
-            }
-            channelsCache.put(channel, channelInfo);
-        }
-        return channelsCache.get(channel);
-    }
 }

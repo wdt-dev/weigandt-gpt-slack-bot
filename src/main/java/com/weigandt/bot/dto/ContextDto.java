@@ -1,4 +1,4 @@
-package com.weigandt.bot;
+package com.weigandt.bot.dto;
 
 import com.slack.api.methods.MethodsClient;
 import org.slf4j.Logger;
