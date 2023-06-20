@@ -1,6 +1,6 @@
 package com.weigandt.chatsettings.service.impl;
 
-import com.weigandt.chatsettings.dto.TokenCountSettings;
+import com.weigandt.chatsettings.dto.TokenCountSettingsDto;
 import com.weigandt.chatsettings.dto.TokenUsageDto;
 import com.weigandt.chatsettings.entity.TokenUsageStatistic;
 import com.weigandt.chatsettings.service.TokenUsageService;
@@ -22,9 +22,9 @@ import static com.weigandt.Constants.OPENAI.FEATURE_NOT_ENABLED_MSG;
 public class MockTokenUsageService implements TokenUsageService {
 
     @Override
-    public TokenCountSettings getUserTokenRestriction(String userName) {
+    public TokenCountSettingsDto getUserTokenRestriction(String userName) {
         log.warn(FEATURE_NOT_ENABLED_MSG);
-        return new TokenCountSettings(userName, DEFAULT_SOFT_RESTRICTION, DEFAULT_HARD_RESTRICTION);
+        return new TokenCountSettingsDto(userName, DEFAULT_SOFT_RESTRICTION, DEFAULT_HARD_RESTRICTION);
     }
 
     @Override
