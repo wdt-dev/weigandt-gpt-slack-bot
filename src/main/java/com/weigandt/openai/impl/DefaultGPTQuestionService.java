@@ -75,6 +75,7 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
         String transformedChatHistory = chatHistory.stream()
                 .sorted(Comparator.comparing(Message::getTs))
                 .map(msg -> transformMessage(msg, botUserId))
+                .distinct()
                 .collect(Collectors.joining(System.lineSeparator()));
 
         String msg = QA_WITH_HISTORY_PROMPT.replace(QUESTION, question)
@@ -86,7 +87,7 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
     private String transformMessage(Message message, String botUserId) {
         return (StringUtils.equals(botUserId, message.getUser()) ?
                 ChatMessageRole.ASSISTANT.value() :
-                ChatMessageRole.USER.value()) + ": " + message.getText();
+                ChatMessageRole.USER.value()) + ": " + StringUtils.trim(message.getText());
     }
 
     private ChatMessage createUserChatMessage(String question) {
