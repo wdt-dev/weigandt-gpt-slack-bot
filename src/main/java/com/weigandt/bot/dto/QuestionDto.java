@@ -16,10 +16,10 @@ import java.util.Optional;
 public class QuestionDto {
     @Setter
     private String question;
-    private final String threadTs;
     private final String rawInputText;
     private final String user;
     private final String answerPrefix;
+    private final String threadTs;
 
     public QuestionDto(String rawInputText, String user, String threadTs, String ts, String answerPrefix) {
         this(rawInputText, user, answerPrefix, Optional.ofNullable(threadTs).filter(StringUtils::isNotBlank).orElse(ts));
