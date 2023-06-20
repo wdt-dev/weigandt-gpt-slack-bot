@@ -4,10 +4,10 @@ import com.slack.api.bolt.context.builtin.EventContext;
 import com.slack.api.bolt.response.Response;
 import com.slack.api.methods.SlackApiException;
 import com.weigandt.answering.AnswerService;
-import com.weigandt.bot.ContextDto;
-import com.weigandt.bot.QuestionDto;
-import com.weigandt.bot.SlackSupportService;
+import com.weigandt.bot.dto.ContextDto;
+import com.weigandt.bot.dto.QuestionDto;
 import com.weigandt.bot.handlers.AbstractGptChatHandler;
+import com.weigandt.bot.services.SlackSupportService;
 import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
 
