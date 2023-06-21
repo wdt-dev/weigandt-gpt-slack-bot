@@ -12,15 +12,16 @@ services:
       - /usr/gptslackbot/logs:/usr/gptslackbot/logs
       - /usr/gptslackbot/ssl:/usr/gptslackbot/ssl
     depends_on:
-      - mysqldb
+      - mongodb
 
-  mysqldb:
-    container_name: mysql-db-settings
-    image: mysql:latest
-    restart: unless-stopped
+  mongodb:
+    container_name: mongodb
+    image: mongo:6-jammy
+    restart: always
+    env_file: mongo.env
     ports:
-      - '3306:3306'
-    env_file:
-      - mysql.env
+      - "27017:27017"
     volumes:
-      - /usr/gptslackbot/data:/var/lib/mysql
+      - /usr/gptslackbot/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - /usr/gptslackbot/mongodata:/data/db
+      - /usr/gptslackbot/mongologs:/var/log/mongodb

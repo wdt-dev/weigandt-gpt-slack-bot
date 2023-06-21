@@ -8,3 +8,6 @@ docker-local.yml
 /ssl/
 /logs/
 /data/
+/mongodata/
+/mongologs/
+mongo-init.js
