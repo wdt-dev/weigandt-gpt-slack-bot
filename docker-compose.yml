@@ -22,6 +22,6 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - /usr/gptslackbot/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - /usr/gptslackbot/mongoinit:/docker-entrypoint-initdb.d/
       - /usr/gptslackbot/mongodata:/data/db
       - /usr/gptslackbot/mongologs:/var/log/mongodb
