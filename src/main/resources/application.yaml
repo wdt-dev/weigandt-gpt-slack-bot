@@ -4,6 +4,15 @@ spring:
   profiles:
     active:
 
+  data:
+    mongodb:
+      authentication-database: admin
+      database: usersettings
+      host:
+      port:
+      username:
+      password:
+
 server:
   servlet:
     encoding:
