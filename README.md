@@ -11,7 +11,7 @@
     git clone git@github.com:wdt-dev/weigandt-gpt-slack-bot.git
     ```
 - Create an application in Slack to serve by this App (take a look at [app_manifest_example.json](app_manifest_example.json) as an example), don't forget to provide proper links to the domain you're using
-- Provide .env file properties (access keys to SLACK app, OPENAI, DB, etc.), take a look at [sample.env](sample.env) for the list of properties
+- Provide .env file properties (access keys to SLACK app, DB, etc.), take a look at [sample.env](sample.env) for the list of properties
 - Run 
     ```
     docker compose up -d
@@ -26,3 +26,4 @@
 ## Known issues
 - If you didn't get answer - pls check logs for information if API keys are correct and connections could be established, also check if you didn't forget to add bot (to provide access to the MPIM or channel), otherwise the bot can't identify chat and thread to answer to
 - Sometimes answering duplication can be faces in case of huge load (it depends on deployment you're using and number of users)
+- MongoDB requires user to access it, see [mongo-init-example.js](mongo-init-example.js) for example script. Unfortunately, script isn't executed with docker container, so you should create user manually
