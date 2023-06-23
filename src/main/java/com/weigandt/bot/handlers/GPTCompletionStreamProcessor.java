@@ -17,8 +17,8 @@ import com.weigandt.chatsettings.service.TokenUsageService;
 import com.weigandt.history.ChatHistoryLogService;
 import com.weigandt.history.LogMsgJsonBuilder;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -35,6 +35,7 @@ import static com.weigandt.Constants.SLACK_BOT.IM;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 
 @RequiredArgsConstructor
+@Slf4j
 public class GPTCompletionStreamProcessor {
 
     private final SlackSupportService slackSupportService;
@@ -50,7 +51,6 @@ public class GPTCompletionStreamProcessor {
     public void initAnswering() throws IOException, SlackApiException {
         MethodsClient client = contextDto.client();
         String botToken = contextDto.botToken();
-        Logger logger = contextDto.logger();
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(channelInfo.getId())
                 .threadTs(dto.getThreadTs())
@@ -59,7 +59,7 @@ public class GPTCompletionStreamProcessor {
         );
 
         if (!messageResponse.isOk()) {
-            logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+            log.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
         }
     }
 
@@ -67,7 +67,6 @@ public class GPTCompletionStreamProcessor {
             throws SlackApiException, IOException {
         MethodsClient client = contextDto.client();
         String botToken = contextDto.botToken();
-        Logger logger = contextDto.logger();
 
         String answerChunk = chatCompletionChunk.getChoices().stream()
                 .map(ChatCompletionChoice::getMessage)
@@ -89,7 +88,7 @@ public class GPTCompletionStreamProcessor {
                 .map(ChatCompletionChoice::getFinishReason)
                 .filter(StringUtils::isNotBlank).findFirst();
         if (finishReason.isPresent()) {
-            logger.debug("Stream finish reason: {}", finishReason.get());
+            log.debug("Stream finish reason: {}", finishReason.get());
             String respText = String.format("<@%s> %s %s", dto.getUser(), dto.getAnswerPrefix(), sb);
             RequestConfigurator<ChatPostMessageRequest.ChatPostMessageRequestBuilder> postMsgConfigurator = r -> r
                     .channel(channelInfo.getId())
@@ -98,7 +97,7 @@ public class GPTCompletionStreamProcessor {
                     .blocks(slackSupportService.wrapInBlock(respText));
             ChatPostMessageResponse messageResponse = client.chatPostMessage(postMsgConfigurator);
             if (!messageResponse.isOk()) {
-                logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+                log.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
                 return;
             }
             String userFullName = slackSupportService.getCachedUserFullName(dto.getUser(), client, botToken);
@@ -125,7 +124,6 @@ public class GPTCompletionStreamProcessor {
     private void checkSoftThreshold(String userName) throws SlackApiException, IOException {
         MethodsClient client = contextDto.client();
         String botToken = contextDto.botToken();
-        Logger logger = contextDto.logger();
         if (tokenUsageService.isSoftThresholdExceeded(userName)) {
             Integer tokenUsedTotal = tokenUsageService.getTodayStatistics(userName).get().getTokenUsedTotal();
             Integer threshold = tokenUsageService.getUserTokenRestriction(userName).hardThreshold();
@@ -137,7 +135,7 @@ public class GPTCompletionStreamProcessor {
                     .blocks(slackSupportService.wrapInBlock(respText));
             ChatPostMessageResponse messageResponse = client.chatPostMessage(postMsgConfigurator);
             if (!messageResponse.isOk()) {
-                logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+                log.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
             }
         }
     }
@@ -145,9 +143,8 @@ public class GPTCompletionStreamProcessor {
     public void processException(Throwable e) throws SlackApiException, IOException {
         MethodsClient client = contextDto.client();
         String botToken = contextDto.botToken();
-        Logger logger = contextDto.logger();
 
-        logger.error("Something went wrong asking OpenAI for answer: {}", e.getMessage(), e);
+        log.error("Something went wrong asking OpenAI for answer: {}", e.getMessage(), e);
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(channelInfo.getId())
                 .threadTs(dto.getThreadTs())
@@ -155,14 +152,13 @@ public class GPTCompletionStreamProcessor {
                 .blocks(slackSupportService.wrapInBlock(CANT_ANSWER_MSG))
         );
         if (!messageResponse.isOk()) {
-            logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+            log.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
         }
     }
 
     public void shouldWaitForAnswer() throws IOException, SlackApiException {
         MethodsClient client = contextDto.client();
         String botToken = contextDto.botToken();
-        Logger logger = contextDto.logger();
         ChatPostMessageResponse messageResponse = client.chatPostMessage(r -> r
                 .channel(channelInfo.getId())
                 .threadTs(dto.getThreadTs())
@@ -171,7 +167,7 @@ public class GPTCompletionStreamProcessor {
         );
 
         if (!messageResponse.isOk()) {
-            logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+            log.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
         }
     }
 
