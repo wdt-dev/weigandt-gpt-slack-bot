@@ -9,7 +9,7 @@ import com.slack.api.model.event.MessageEvent;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.dto.QuestionDto;
 import com.weigandt.bot.services.SlackSupportService;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -17,6 +17,7 @@ import java.io.IOException;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Service
+@Slf4j
 public class MessageEventHandler extends AbstractGptChatEventHandler implements BoltEventHandler<MessageEvent> {
     public MessageEventHandler(AnswerService answerService,
                                SlackSupportService slackSupportService) {
@@ -27,8 +28,7 @@ public class MessageEventHandler extends AbstractGptChatEventHandler implements 
     public Response apply(EventsApiPayload<MessageEvent> payload, EventContext ctx)
             throws IOException, SlackApiException {
         MessageEvent event = payload.getEvent();
-        Logger logger = ctx.logger;
-        logger.debug("MessageEventHandler content:{}", event);
+        log.debug("MessageEventHandler content:{}", event);
 
         QuestionDto dto = new QuestionDto(event, EMPTY);
         return makeChatGptGreatAgain(ctx, dto);

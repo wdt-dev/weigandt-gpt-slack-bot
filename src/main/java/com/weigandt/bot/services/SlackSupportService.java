@@ -8,7 +8,6 @@ import com.slack.api.model.Message;
 import com.slack.api.model.block.LayoutBlock;
 import com.weigandt.bot.dto.ContextDto;
 import com.weigandt.bot.dto.QuestionDto;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
