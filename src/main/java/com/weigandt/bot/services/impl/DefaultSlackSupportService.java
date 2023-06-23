@@ -1,5 +1,7 @@
 package com.weigandt.bot.services.impl;
 
+import com.slack.api.bolt.context.Context;
+import com.slack.api.bolt.context.builtin.EventContext;
 import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.request.conversations.ConversationsHistoryRequest;
@@ -42,6 +44,7 @@ import static com.weigandt.Constants.SEARCH.HAS_JOINED_MSG;
 import static com.weigandt.Constants.SEARCH.LIMITS_MSG;
 import static com.weigandt.Constants.SEARCH.THE_ANSWER_IS_HUGE_MSG;
 import static com.weigandt.Constants.SLACK_BOT.CHAT_POST_MESSAGE_FAILED;
+import static com.weigandt.Constants.SLACK_BOT.NO_CHAT_ACCESS;
 import static com.weigandt.Constants.SLACK_BOT.TOKEN_LIMIT_EXCEEDED;
 import static java.util.Objects.isNull;
 import static org.apache.commons.collections4.ListUtils.emptyIfNull;
@@ -60,6 +63,10 @@ public class DefaultSlackSupportService implements SlackSupportService {
     private final List<String> trashMsgs = Arrays.asList(LIMITS_MSG, BOT_IS_TYPING, THE_ANSWER_IS_HUGE_MSG, HAS_JOINED_MSG);
     @Value("${chat.history.limit:10}")
     private Integer historyLimit;
+    @Value("${openai.qa.threshold.soft:3000}")
+    private long softThresholdMs;
+    @Value("${openai.qa.threshold.hard:10000}")
+    private long hardThresholdMs;
 
     private final TokenUsageService tokenUsageService;
 
@@ -119,7 +126,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
 
     @Override
     public boolean isHardThresholdExceeded(ContextDto contextDto,
-                                           QuestionDto dto, Logger logger,
+                                           QuestionDto dto,
                                            Conversation channelInfo)
             throws SlackApiException, IOException {
         String botToken = contextDto.botToken();
@@ -135,7 +142,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
                     .token(botToken)
                     .blocks(this.wrapInBlock(respText)));
             if (!messageResponse.isOk()) {
-                logger.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
+                log.error(CHAT_POST_MESSAGE_FAILED, messageResponse.getError());
             }
             return true;
         }
@@ -165,6 +172,39 @@ public class DefaultSlackSupportService implements SlackSupportService {
             channelsCache.put(channel, channelInfo);
         }
         return channelsCache.get(channel);
+    }
+
+    @Override
+    public ContextDto buildContext(Context ctx) {
+        String botToken = ctx.getBotToken();
+        String botUserId = ctx.getBotUserId();
+        String channelId = null;
+        if (ctx instanceof EventContext eCtx) {
+            channelId = eCtx.getChannelId();
+        }
+        MethodsClient client = ctx.client();
+        Logger logger = ctx.getLogger();
+        return new ContextDto(botToken, client, logger, botUserId, channelId,
+                softThresholdMs, hardThresholdMs);
+    }
+
+    @Override
+    public boolean isValidQuestion(ContextDto contextDto, QuestionDto dto) throws SlackApiException, IOException {
+        log.debug("Context dto: {}", contextDto);
+        Conversation channelInfo = this.getCachedChannelInfo(contextDto);
+        if (isNull(channelInfo)) {
+            log.warn(NO_CHAT_ACCESS, contextDto.channelId());
+            return false;
+        }
+        String botUserId = contextDto.botUserId();
+        if (!this.isCorrectToAnswerMsg(dto.getRawInputText(), botUserId, channelInfo.isIm())) {
+            log.info("Bot not tagged or isn't an IM channel, ignore");
+            return false;
+        }
+        if (this.isHardThresholdExceeded(contextDto, dto, channelInfo)) {
+            return false;
+        }
+        return true;
     }
 
 
