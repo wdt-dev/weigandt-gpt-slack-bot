@@ -11,7 +11,6 @@ import com.weigandt.bot.dto.QuestionDto;
 import com.weigandt.bot.services.SlackSupportService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -30,8 +29,7 @@ public class MessageChangedEventHandler extends AbstractGptChatEventHandler impl
     public Response apply(EventsApiPayload<MessageChangedEvent> payload, EventContext ctx)
             throws IOException, SlackApiException {
         MessageChangedEvent event = payload.getEvent();
-        Logger logger = ctx.logger;
-        logger.debug("MessageChangedEventHandler content:{}", event);
+        log.debug("MessageChangedEventHandler content:{}", event);
         String newText = trim(event.getMessage().getText());
         String oldText = trim(event.getPreviousMessage().getMessage().getText());
         if (StringUtils.equals(newText, oldText)) {

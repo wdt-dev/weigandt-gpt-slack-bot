@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -166,7 +165,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
         if (!channelsCache.containsKey(channel)) {
             Conversation channelInfo = getChannelInfo(client, channel, botToken);
             if (isNull(channelInfo)) {
-                contextDto.logger().debug("Channel info is empty");
+                log.debug("Channel info is empty");
                 return null;
             }
             channelsCache.put(channel, channelInfo);
@@ -183,8 +182,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
             channelId = eCtx.getChannelId();
         }
         MethodsClient client = ctx.client();
-        Logger logger = ctx.getLogger();
-        return new ContextDto(botToken, client, logger, botUserId, channelId,
+        return new ContextDto(botToken, client, botUserId, channelId,
                 softThresholdMs, hardThresholdMs);
     }
 
