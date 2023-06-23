@@ -9,8 +9,6 @@ import com.slack.api.model.event.MessageChangedEvent;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.dto.QuestionDto;
 import com.weigandt.bot.services.SlackSupportService;
-import com.weigandt.chatsettings.service.TokenUsageService;
-import com.weigandt.history.ChatHistoryLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,10 +22,8 @@ import static org.apache.commons.lang3.StringUtils.trim;
 @Slf4j
 public class MessageChangedEventHandler extends AbstractGptChatEventHandler implements BoltEventHandler<MessageChangedEvent> {
     public MessageChangedEventHandler(AnswerService answerService,
-                                      SlackSupportService slackSupportService,
-                                      ChatHistoryLogService chatHistoryLogService,
-                                      TokenUsageService tokenUsageService) {
-        super(answerService, slackSupportService, chatHistoryLogService, tokenUsageService);
+                                      SlackSupportService slackSupportService) {
+        super(answerService, slackSupportService);
     }
 
     @Override
