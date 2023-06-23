@@ -6,25 +6,26 @@ import com.slack.api.methods.SlackApiException;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.dto.ContextDto;
 import com.weigandt.bot.dto.QuestionDto;
-import com.weigandt.bot.handlers.AbstractGptChatHandler;
 import com.weigandt.bot.services.SlackSupportService;
-import com.weigandt.chatsettings.service.TokenUsageService;
-import com.weigandt.history.ChatHistoryLogService;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 
-public abstract class AbstractGptChatEventHandler extends AbstractGptChatHandler {
-    protected AbstractGptChatEventHandler(AnswerService answerService,
-                                          SlackSupportService slackSupportService,
-                                          ChatHistoryLogService chatHistoryLogService,
-                                          TokenUsageService tokenUsageService) {
-        super(answerService, slackSupportService, chatHistoryLogService, tokenUsageService);
-    }
+@RequiredArgsConstructor
+@Getter
+@Slf4j
+public abstract class AbstractGptChatEventHandler {
+    private final AnswerService answerService;
+    private final SlackSupportService slackSupportService;
 
     public Response makeChatGptGreatAgain(EventContext ctx, QuestionDto dto)
             throws SlackApiException, IOException {
-        ContextDto contextDto = buildContext(ctx);
-        super.makeChatGptGreatAgain(contextDto, dto);
+        ContextDto contextDto = getSlackSupportService().buildContext(ctx);
+        if (slackSupportService.isValidQuestion(contextDto, dto)) {
+            answerService.answer(contextDto, dto);
+        }
         return ctx.ack();
     }
 }

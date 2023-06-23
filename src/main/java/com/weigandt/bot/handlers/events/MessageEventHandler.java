@@ -9,8 +9,6 @@ import com.slack.api.model.event.MessageEvent;
 import com.weigandt.answering.AnswerService;
 import com.weigandt.bot.dto.QuestionDto;
 import com.weigandt.bot.services.SlackSupportService;
-import com.weigandt.chatsettings.service.TokenUsageService;
-import com.weigandt.history.ChatHistoryLogService;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +19,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @Service
 public class MessageEventHandler extends AbstractGptChatEventHandler implements BoltEventHandler<MessageEvent> {
     public MessageEventHandler(AnswerService answerService,
-                               SlackSupportService slackSupportService,
-                               ChatHistoryLogService chatHistoryLogService,
-                               TokenUsageService tokenUsageService) {
-        super(answerService, slackSupportService, chatHistoryLogService, tokenUsageService);
+                               SlackSupportService slackSupportService) {
+        super(answerService, slackSupportService);
     }
 
     @Override
