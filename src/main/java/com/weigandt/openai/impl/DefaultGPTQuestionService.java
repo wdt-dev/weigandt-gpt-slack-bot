@@ -80,7 +80,7 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
 
         String msg = QA_WITH_HISTORY_PROMPT.replace(QUESTION, question)
                 .replace(CHAT_HISTORY, transformedChatHistory);
-        log.info("Full Question: \n{}", msg);
+        log.debug("Full Question: \n{}", msg);
         return singletonList(createUserChatMessage(msg));
     }
 
