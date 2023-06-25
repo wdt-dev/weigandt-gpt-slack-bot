@@ -94,7 +94,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
                     return m;
                 })
                 .toList();
-        log.info("Filtered history with replies: {}", filteredMessages.stream().map(Message::getText).toList());
+        log.debug("Filtered history with replies: {}", filteredMessages.stream().map(Message::getText).toList());
         return filteredMessages;
     }
 
@@ -199,10 +199,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
             log.info("Bot not tagged or isn't an IM channel, ignore");
             return false;
         }
-        if (this.isHardThresholdExceeded(contextDto, dto, channelInfo)) {
-            return false;
-        }
-        return true;
+        return !this.isHardThresholdExceeded(contextDto, dto, channelInfo);
     }
 
 
