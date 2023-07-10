@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -93,6 +94,7 @@ public class DefaultSlackSupportService implements SlackSupportService {
                     m.setText(cleanupMessage(m.getText()));
                     return m;
                 })
+                .sorted(Comparator.comparing(Message::getTs))
                 .toList();
         log.debug("Filtered history with replies: {}", filteredMessages.stream().map(Message::getText).toList());
         return filteredMessages;

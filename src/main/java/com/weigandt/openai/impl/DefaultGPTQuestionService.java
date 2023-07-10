@@ -17,7 +17,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,14 +72,14 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
             return singletonList(createUserChatMessage(question));
         }
         String transformedChatHistory = chatHistory.stream()
-                .sorted(Comparator.comparing(Message::getTs))
+                .filter(msg -> !StringUtils.equals(msg.getText(), question))
                 .map(msg -> transformMessage(msg, botUserId))
                 .distinct()
                 .collect(Collectors.joining(System.lineSeparator()));
 
         String msg = QA_WITH_HISTORY_PROMPT.replace(QUESTION, question)
                 .replace(CHAT_HISTORY, transformedChatHistory);
-        log.debug("Full Question: \n{}", msg);
+        log.info("Full Question: \n{}", msg);
         return singletonList(createUserChatMessage(msg));
     }
 
