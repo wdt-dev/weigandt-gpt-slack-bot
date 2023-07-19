@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -33,12 +32,7 @@ import static java.util.Collections.singletonList;
 public class DefaultGPTQuestionService implements GPTQuestionService {
     @Value("${openai.qa.model:}")
     private String qaModel;
-    @Value("${openai.qa.threshold.soft:3000}")
-    private long softThresholdMs;
-    @Value("${openai.qa.threshold.hard:10000}")
-    private long hardThresholdMs;
     private final OpenAiService openAiService;
-    private final Environment environment;
 
     @Override
     public Flowable<ChatCompletionChunk> askAsync(String question, List<Message> chatHistory,
@@ -54,16 +48,6 @@ public class DefaultGPTQuestionService implements GPTQuestionService {
             log.warn(ERROR_ANSWERING_QUESTION, question, ex);
         }
         return Flowable.empty();
-    }
-
-    @Override
-    public long getSoftThresholdMs() {
-        return softThresholdMs;
-    }
-
-    @Override
-    public long getHardThresholdMs() {
-        return hardThresholdMs;
     }
 
     private List<ChatMessage> prepareQuestion(String question, List<Message> chatHistory,

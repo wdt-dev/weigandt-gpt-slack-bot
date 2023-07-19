@@ -31,10 +31,6 @@ public class DefaultAnswerService implements AnswerService {
     private final TokenUsageService tokenUsageService;
 
     @Override
-    public Flowable<ChatCompletionChunk> getAnswerAsync(String question, List<Message> history, String botUserId) {
-        return gptQuestionService.askAsync(question, history, botUserId);
-    }
-    @Override
     public void answer(ContextDto contextDto, QuestionDto dto) throws SlackApiException, IOException {
         String botUserId = contextDto.botUserId();
         String question = slackSupportService.cleanupMessage(dto.getRawInputText());
