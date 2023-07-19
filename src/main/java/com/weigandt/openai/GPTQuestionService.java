@@ -9,8 +9,4 @@ import java.util.List;
 public interface GPTQuestionService {
     Flowable<ChatCompletionChunk> askAsync(String question, List<Message> chatHistory,
                                            String botUserId);
-
-    long getSoftThresholdMs();
-
-    long getHardThresholdMs();
 }
