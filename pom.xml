@@ -16,15 +16,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <junit.version>5.9.2</junit.version>
-        <mockito.version>5.2.0</mockito.version>
-        <mockito.junit.version>5.2.0</mockito.junit.version>
-        <assertj.version>3.24.2</assertj.version>
         <slack.bolt.version>1.29.2</slack.bolt.version>
         <slack.bolt.servlet.version>1.29.2</slack.bolt.servlet.version>
-        <slf4j.simple.version>2.0.5</slf4j.simple.version>
-        <java.servlet.api.version>4.0.1</java.servlet.api.version>
         <lombok.version>1.18.26</lombok.version>
+        <gson.version>2.10.1</gson.version>
+        <gpt.client.version>0.12.0</gpt.client.version>
+        <apache.commons.version>4.4</apache.commons.version>
     </properties>
     <dependencies>
         <dependency>
@@ -49,22 +46,22 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.10.1</version>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.theokanning.openai-gpt3-java</groupId>
             <artifactId>service</artifactId>
-            <version>0.12.0</version>
+            <version>${gpt.client.version}</version>
         </dependency>
         <dependency>
             <groupId>com.theokanning.openai-gpt3-java</groupId>
             <artifactId>api</artifactId>
-            <version>0.12.0</version>
+            <version>${gpt.client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.4</version>
+            <version>${apache.commons.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
